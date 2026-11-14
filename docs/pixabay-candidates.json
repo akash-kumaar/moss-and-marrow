@@ -1,0 +1,538 @@
+{
+  "createdAt": "2026-11-05T23:55:17.860Z",
+  "notice": "Candidate previews only. No Pixabay image has been downloaded or assigned.",
+  "items": [
+    {
+      "slug": "double-espresso",
+      "name": "Double Espresso",
+      "query": "double espresso ceramic cup",
+      "folder": "coffee",
+      "candidates": [
+        {
+          "id": 471166,
+          "previewUrl": "https://pixabay.com/get/g09bf370ef9fd9e3b271409a492c369588c96e74350da6db4152c6bf388bd483a581ac4e95d1423e79762f4e580f6b7c3_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g1da2b5d75de58a29ecc2d0d56023179f3c78fba56aa29c39b085bf6f927bcdbf6c94e8732c351fede7d9ceeecbefb1fa5cc2d7d6283037bd2d9b502e636fd863_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/coffee-espresso-portafilter-471166/",
+          "photographer": "akunnen",
+          "tags": "coffee, espresso, portafilter, coffee cups, espresso, espresso, espresso, espresso, espresso",
+          "width": 3456,
+          "height": 2304
+        },
+        {
+          "id": 819362,
+          "previewUrl": "https://pixabay.com/get/gdc68a30b55ca0757a4accc0ed7ab0b6ec53161ef30f7db638e498738be3e26849a3acc109e9c96c95021e7ff30456c55_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g08fec7280b3669a94cb16f3a1fd3eb85069942854e888e77f663a58db095d74760e07fcc91705c8cb6af4451c81d0f35685507a6e991aee7d91b1afc1d7cb09b_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/coffee-cup-mug-coffee-cup-819362/",
+          "photographer": "fancycrave1",
+          "tags": "coffee, cup, mug, coffee cup, coffee mug, caffeine, hot coffee, coffee break, morning coffee, cafe, drink, beverage, hot, coffee, coffee, coffee, coffee, coffee",
+          "width": 4477,
+          "height": 3358
+        },
+        {
+          "id": 15994,
+          "previewUrl": "https://pixabay.com/get/g6f96d3f919a520eedb29ed0a2ad4b0b3a64eb99fbba73ca5781fb1a81acffa8bb07b69fa5ca0d4e19bb63bd1a12d15ee_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g6363b39ebd6c527cdedc076dc193a4158a0e186ff9f8aceaa37517747b2e58900c0d065b5f3dfccaf62f8d19ad63612a_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/coffee-beans-cup-cup-of-coffee-15994/",
+          "photographer": "PublicDomainPictures",
+          "tags": "coffee, beans, cup, cup of coffee, coffee cup, black coffee, coffee beans, aroma, hot coffee, caffeine, coffee icon, drink, beverage, hot drink, hot beverage, cafe, coffee, coffee, coffee, coffee, coffee",
+          "width": 4752,
+          "height": 3168
+        }
+      ]
+    },
+    {
+      "slug": "americano",
+      "name": "Americano",
+      "query": "americano coffee ceramic cup",
+      "folder": "coffee",
+      "candidates": [
+        {
+          "id": 455423,
+          "previewUrl": "https://pixabay.com/get/geeef5065dfd5548ac3cc402ce5ac8778308542b74685efc155faec1e33dcfec3b1bb75ddfaf2e2b6aadba8ca63c1a64a_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g93e7ac842737d5cb7fde0e2608d2f7a06b397626972d1f27e3b19beae0a7ca93f6f34f1aedca3d2dda44e0b39bfa7c92d4babb4487d754014a89a5bc541c28c2_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/cup-of-coffee-coffee-break-coffee-455423/",
+          "photographer": "stevepb",
+          "tags": "cup of coffee, coffee break, coffee, cup, cafe, hot, caffeine, coffee cup, beverage, instant coffee, drink, white",
+          "width": 5472,
+          "height": 3648
+        },
+        {
+          "id": 7730820,
+          "previewUrl": "https://pixabay.com/get/ge754b1d0e811027fe4dc2c6647c0d34fd1589ddfb147d4f9da037e1c69f86014454ca6bb586115887a3c7c3b56b8bd2e2fae3fe109a2ffa664078b3701e84459_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g40a5270cf8080c38adc7e4bfb7f41b1ba7af8d2f31a9c4668d1459464e9e229b676e0072dd6c222ed4df2ac106656f0fee29d6e9d70ee01139a8bb4b985891e5_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/cafe-dessert-coffee-seoul-7730820/",
+          "photographer": "kara-seoul",
+          "tags": "cafe, dessert, coffee, seoul, south korea, cake, food, cafe, cafe, cafe, cafe, cafe, coffee, coffee, coffee, coffee, coffee, seoul, seoul, south korea, cake, cake",
+          "width": 4032,
+          "height": 3024
+        },
+        {
+          "id": 2589691,
+          "previewUrl": "https://pixabay.com/get/gcc290ff973651750a1c25b7771103a67a7c8c95439e1fd557de1aa35c83ce1167aedb5976ab719aaf12fc01d2d9381391318c3c91d88051b70386f9e78cb72a1_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g57766449f363aadd995ddadd0d352aa988c7e3fb23b52b1c9253ead204d21e58616adb99f1ded1cc5d940bf746e0d715d50141511136912247640a74d1f72714_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/coffee-cafe-hot-mug-cup-white-2589691/",
+          "photographer": "StockSnap",
+          "tags": "coffee, cafe, hot, mug, cup, white, coffeemaker, coffee cup, shop, restaurant",
+          "width": 5749,
+          "height": 3235
+        }
+      ]
+    },
+    {
+      "slug": "cappuccino",
+      "name": "Cappuccino",
+      "query": "cappuccino latte art ceramic cup",
+      "folder": "coffee",
+      "candidates": [
+        {
+          "id": 4618705,
+          "previewUrl": "https://pixabay.com/get/g90544be084c04f62a55eb23069c0032a4676c1ac938329d6a6f9ae21b99330b6939c3ec25a21daf7e41e214df8519a23ee191e37983b03b43c8023e33caa0c20_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g239084b506c4c4c3bedf2292e1d411661cd876bf64abfd08703ea7a5b1e35b1dfc5be8433f00f704f7561ab2ea6bd1909582d56308398dc810d3059f7c038485_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/coffee-cup-caffeine-espresso-4618705/",
+          "photographer": "13758299",
+          "tags": "coffee, cup, caffeine, espresso, coffee cup, brown coffee, brown cup",
+          "width": 5992,
+          "height": 4000
+        },
+        {
+          "id": 1839134,
+          "previewUrl": "https://pixabay.com/get/gb9fd7640b09c50583b67cb6fb20e8db608a2086d756a97ca222a01e5f92392b588ea418d117988a7c7ace9677f59404d303f41f5b2bd8b007b6ee41dd60f6f74_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/gb4e4c73f0972de82d8b22dc0b0e5332744bccb8e31eea1215af6470b89a4fb2d4d19d98b476256056a2d20190bb2906820d506caa038bd48c1d32ce5e92d1898_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/drink-coffee-cafe-cake-cappuccino-1839134/",
+          "photographer": "Pexels",
+          "tags": "drink, coffee, cafe, cake, cappuccino, coffee cup, ceramic, cup, dessert, food, mug, plate",
+          "width": 5184,
+          "height": 3456
+        },
+        {
+          "id": 1845314,
+          "previewUrl": "https://pixabay.com/get/gcaa9a896d40d337996c54e1bcfecb6d90ab4f8361dfbe8e0c49356e77848560e50cce7088a142f185b1bb4ab1e3ee39c26ab1dfc1a328c8407b2d165e8d2488f_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/gcd9e75a10919c10856e98494dc855966189facfaf06a364e3c53a115cd826c872e9920596e0b0ecae11c499f90cf458fd4afbffc74e7c2cbfe9e58ce8362ea4c_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/caffeine-cappuccino-coffee-cup-1845314/",
+          "photographer": "Pexels",
+          "tags": "caffeine, cappuccino, coffee, cup, drink, mug, beverage, aroma, coffee cup, brown coffee, brown cup, coffee, coffee, coffee, coffee, coffee, coffee cup",
+          "width": 6016,
+          "height": 4016
+        }
+      ]
+    },
+    {
+      "slug": "spanish-latte",
+      "name": "Spanish Latte",
+      "query": "spanish latte iced coffee glass",
+      "folder": "coffee",
+      "candidates": [
+        {
+          "id": 6112296,
+          "previewUrl": "https://pixabay.com/get/gadbbb976114b33454ad16b4dfd45ba12e0d6b231697cc2167185af6dc2071c898151214313dd3809960205ca9944c1071bc2edf7ff98d54055c62b8a29d91421_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g9e7b4deda43940b1f8fc9ef4e63eb55b07eba48c8e0e45d913663ff790c137475432514301d68354dae41dac14fe74946879da820a6031b6d4d34eda2c28d1a4_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/couple-love-cafe-drinks-romance-6112296/",
+          "photographer": "Cloud1902",
+          "tags": "couple, love, cafe, drinks, romance, cafe, cafe, cafe, cafe, cafe",
+          "width": 5275,
+          "height": 3630
+        },
+        {
+          "id": 1869731,
+          "previewUrl": "https://pixabay.com/get/gae9cadd8607fc60f721086787de5d3928d155929a1238a415e4b39c277de569c81b4af190cd2a3a95f58beb1ae825a80b07261ca6a8a8f65fac97e7c0e32928a_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/gb29debba9685d258e8c731e627ed5e95773d4c3711288a16060fbf83eb91f4d72cd910d8aecc1152a64c236f6d3366d3ea2d10f6e3db988963e337e2d3f16c49_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/cappuccino-coffee-cream-cup-glass-1869731/",
+          "photographer": "Pexels",
+          "tags": "cappuccino, coffee, cream, cup, glass, caffeine, drink, indoors, saucer, still life, coffee cup, table, beverage",
+          "width": 5300,
+          "height": 3533
+        },
+        {
+          "id": 1851114,
+          "previewUrl": "https://pixabay.com/get/g7e5cbaaa431ca2c2f562e1e519664a73fcec4e2b50e47a6334a545417a948923eeef668afa2de330f47b9fe2e3e814edd7b1c4578cfd450e415f9c9186922523_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g6d447250365d11f71077a182f2796d1e0daff16c3a516896039b7fdf5663eac74bf0e753a95d196dcc1dc786d48110c0cf50b9471fc0dddf00a21061092228e4_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/cafe-bar-restaurant-coffee-1851114/",
+          "photographer": "Pexels",
+          "tags": "cafe, bar, coffee cup, restaurant, coffee, breakfast, cappuccino, cup, drink, glass, indoors, latte, person, plate, table",
+          "width": 5419,
+          "height": 3613
+        }
+      ]
+    },
+    {
+      "slug": "butter-croissant",
+      "name": "Butter Croissant",
+      "query": "golden butter croissant bakery",
+      "folder": "brunch",
+      "candidates": [
+        {
+          "id": 1867459,
+          "previewUrl": "https://pixabay.com/get/gbd3add68ebbf2762a5627e23bc4909cf2cd03105bd7e248d8bae2107d5f8c11af011ecd26b6710fe3d1641d07869452acf6df7b69c317b658f9151654a72a3f1_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g69bab508dfdba8eabcb6cd47d7ef891e00df589e0edd599dbf3ffbbaa85c42f8058c7070e1f144385e2eef3566b404bc5c54001f50cf89db66bf37a34f6ee88e_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/breads-pastries-croissants-1867459/",
+          "photographer": "Pexels",
+          "tags": "breads, pastries, croissants, puff pastries, danish, baked goods, puff pastry, bakery, breakfast, delicious, food, fresh pastries, pastry shop, bakeshop, restaurant, shop, tasty, variety, bread display, bakery, bakery, bakery, bakery, bakery, restaurant, restaurant",
+          "width": 5184,
+          "height": 3456
+        },
+        {
+          "id": 9434564,
+          "previewUrl": "https://pixabay.com/get/g7cdf7d59311ad6361396b5ab3837ede95934f4827da51d5d59203601e4237c825fd58b8e47fff7c72bca0fa7278ad3d1a960e98781f0602e0d28905644e65447_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g8fc265c4d324f6547be546d4b1dc282cf55a8cb58bc3b0b4a6945fdea63a49fc52b99a0d1fe99291fc8c9152e302dd2167f8e069e134a1dee64d37c2644d9637_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/croissant-food-bake-oven-bread-9434564/",
+          "photographer": "Monoar_CGI_Artist",
+          "tags": "croissant, food, bake, oven, bread, bakery, fresh, eat, loaf, crust, breakfast, dough, homemade, flour, delicious, healthy, chef, 3d, blender, cycles",
+          "width": 5760,
+          "height": 3240
+        },
+        {
+          "id": 1153402,
+          "previewUrl": "https://pixabay.com/get/g903fee58707e0aee43b1da1a513462a6ccf91eea503aff4a2e813e3dd30aed98ac06c690d0fc666778ffb722a9e3716a3a2a3c3f4623499bb168b3a45870d741_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/ga221c7e45e061d01de441ca06f796a1ddca8de63fefb2b34f008d72a7f2260342291506390f1c387a15173e38887ae63a551b7b8e0d9539aa1f605f7636654f0_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/croissant-white-butter-buttered-1153402/",
+          "photographer": "Wow_Pho",
+          "tags": "croissant, white, butter, buttered, french, closeup, isolated, roll, delicious, crust, dessert, brown, snack, breakfast, one, gold, traditionally, cuisine, pastry, golden, fresh, bread, single, food, croissant, croissant, croissant, croissant, croissant",
+          "width": 5184,
+          "height": 3456
+        }
+      ]
+    },
+    {
+      "slug": "buttermilk-berry-pancakes",
+      "name": "Buttermilk Berry Pancakes",
+      "query": "buttermilk pancakes fresh berries",
+      "folder": "brunch",
+      "candidates": [
+        {
+          "id": 1984716,
+          "previewUrl": "https://pixabay.com/get/g8c1eb9137c9516c692c143f91c7279754ade790b82f7894b8af057baa85d14eff6069a453e5b1bf546433dd04b3df2fd2b5d67dd92bc603ce01ec24f8216c2f8_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g200e4c42a179767b63f0572deb0d7bc056d7c9a2550fe55cf29c3254a3966ebb1a668f1e2cd15daf112c1ead29cf85683bf717e8fe616f0510c4bccb8b04e952_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/pancakes-schaumomelette-omelette-1984716/",
+          "photographer": "RitaE",
+          "tags": "pancakes, schaumomelette, omelette, eggs, sugar, milk flour, cute, yummy, to bake, sweetness, butter, snack, treat, food, dessert, pastries, meal, sweet dish, pancakes, pancakes, pancakes, sugar, food, food, food, food, food, dessert, dessert, dessert, dessert",
+          "width": 4853,
+          "height": 3071
+        },
+        {
+          "id": 2291908,
+          "previewUrl": "https://pixabay.com/get/g1315afdef7b10cf0ab5ad51e4e91cbb9982a720ba3d03c119a4e739a0c76c9c97a4364bbe89d9ae916d7502fd642cd17e060eba80edf42d8d318906b90b704ee_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/gfd8be12081380908e26724aba3c24937c8c0769163587f74324904bb61ffc49787fa9295a8bba2af8f0b0c682bfbff940c29e85ad12223e370ce964107db5180_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/pancakes-maple-syrup-raspberries-2291908/",
+          "photographer": "piviso",
+          "tags": "pancakes, maple syrup, raspberries, breakfast, pouring syrup, plate, breakfast plate, stack, stack of pancakes, breakfast food, breakfast meal, sweet, food, delicious, morning, tasty, fruits, food photography, pancakes, breakfast, breakfast, food, food, food, food, food",
+          "width": 5184,
+          "height": 3262
+        },
+        {
+          "id": 577386,
+          "previewUrl": "https://pixabay.com/get/gc19a0030f1a07a7de9c1b5451d53acec7e01f7e5f6926473a00e1f1fad443b0566a1ccb5c8c2e4ecd82a843e0e6818c8_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g985783849d98545409b1b7820f926b30e9b18a6d5808e64c9e39c670aa4669ddc425e9e00bc542db19925d5de471f3e92e2b8a6abb1bb56734e13a5e24fb2b49_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/pancakes-crepes-filled-pancake-577386/",
+          "photographer": "congerdesign",
+          "tags": "pancakes, crepes, filled, pancake, meal, hearty, chicken breast fillet, rocket, sheep cheese, yummy, pancakes, pancakes, pancakes, pancakes, crepes, crepes, crepes, crepes, crepes, pancake, rocket",
+          "width": 3648,
+          "height": 2736
+        }
+      ]
+    },
+    {
+      "slug": "avocado-feta-sourdough-toast",
+      "name": "Avocado Feta Sourdough Toast",
+      "query": "avocado feta sourdough toast",
+      "folder": "brunch",
+      "candidates": [
+        {
+          "id": 4488463,
+          "previewUrl": "https://pixabay.com/get/g3870e0ff7dfb40a2f1bd51869ba375c984cd57c845f9961c64ce7054ed967d7872a853ead8be97dc6759d67a0aa312798d1f00dab398ebf9ccae35c87a9b9ca7_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g5b55a7d0b190101f030337a58d6db37071a1bc3422dfec7d0660c10f627202319e57711e77f7ec8117124c0a42b30f28beb617d2c5a57ffa2b436eb5a72749d2_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/smashed-avocado-on-toast-avocado-4488463/",
+          "photographer": "pen_ash",
+          "tags": "smashed avocado on toast, avocado, poached egg, lunch, healthy, cafe, tasty, delicious, avocado, avocado, avocado, avocado, avocado, poached egg",
+          "width": 3024,
+          "height": 3024
+        },
+        {
+          "id": 5619887,
+          "previewUrl": "https://pixabay.com/get/g1f43b11c859c356053af579d8b2f91e07cbca0caf0d50fad6e011470e7dfc17abe08d80a55be76e9600aa544956cf5c77bab1bfc9ea107e35b2f2c0454cc7bfa_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g41d0bbd1e637f4be970a67fc8b032bcb6c56238a42c3e7f4c7417ae03686456eefde022c34e57df16ea85329d7b0ca10601e6911bcc2fa05072b0541c6e7a32b_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/gourmet-food-bread-dish-bruschetta-5619887/",
+          "photographer": "amiraxgelcola",
+          "tags": "gourmet, food, bread, dish, bruschetta, snack, appetizer, starter, toast, tasty, delicious, food, bread, bread, bruschetta, bruschetta, bruschetta, bruschetta, bruschetta, appetizer, toast",
+          "width": 5472,
+          "height": 3648
+        },
+        {
+          "id": 7009956,
+          "previewUrl": "https://pixabay.com/get/g7cc5b26593853e1caa446f3095b60fc2c4367f65f650904cd4baa5d8a654790603f6b3f90895b585519f5eea5b961ef984a9ec3df835b38f4fe1afe2869d6954_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g51622904f25035246d50dcd8ea6ea67cc1cc0ada5dba620a532b761d39fb9294115f554e68bebfaa2bbe440596575bae609a8927e437fdc20ef96c64b87feff2_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/toast-vegan-sandwich-vegan-breakfast-7009956/",
+          "photographer": "Heribertoaguirrefotograf",
+          "tags": "toast, vegan sandwich, vegan breakfast, vegan meal, breakfast, avocados, healthy breakfast, toast, breakfast, breakfast, breakfast, breakfast, breakfast, healthy breakfast",
+          "width": 3968,
+          "height": 2645
+        }
+      ]
+    },
+    {
+      "slug": "classic-eggs-benedict",
+      "name": "Classic Eggs Benedict",
+      "query": "eggs benedict hollandaise poached egg",
+      "folder": "brunch",
+      "candidates": [
+        {
+          "id": 1615616,
+          "previewUrl": "https://pixabay.com/get/ga15a484fbba84e712eeb350376b0e8921ae9d692fc61a79db1c38f67321ee5af2c0fdc24abd776d671a2c685a51ae09274c9a54104c17466ad91779502f9e6ac_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g7b433685ad62cd1fd2c51425b1c310be50c66158509e732ca69df50730ed012fe4c6f1711050241d74bf85fbdb9cdb734660a436cbdd3db89952ed008819bb04_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/lobster-brunch-benedict-fork-food-1615616/",
+          "photographer": "Angelica_Online",
+          "tags": "lobster, brunch, benedict, fork, food, dining, festive, eat, restaurant, lobster, lobster, brunch, brunch, brunch, brunch, brunch",
+          "width": 6016,
+          "height": 4000
+        },
+        {
+          "id": 2843009,
+          "previewUrl": "https://pixabay.com/get/g55dba2c8ef33bbb9f5653fc7fadc73813f06de85f1effb8dc69573f6b77510c458f9f0949d02584b7ac9844e8cb8a459b3f320d7033093d0ff81c951a55e7022_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/gcafba62921195ff2ce853e78f38d8409b059f04afc230458a38c43419876ec289aae00ab3d2eeee7a2ba1a60ad0968db8712512a8ff1045e4884e317afcf3522_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/cafe-brunch-eggs-on-toast-2843009/",
+          "photographer": "Keltra89",
+          "tags": "cafe, brunch, eggs on toast, egg benedict, bacon and egg, sandwich, menu, lunch, breakfast, brunch, brunch, brunch, brunch, brunch, egg benedict, egg benedict, egg benedict",
+          "width": 5184,
+          "height": 3456
+        },
+        {
+          "id": 1868928,
+          "previewUrl": "https://pixabay.com/get/g40c6030f9d5db14aea06f34d95b39dabf2fa155ae9e3663e9b3fc4f273ab0817876852b43fa68cc684a76e18e9aa5b8388273b45f41744794ffa1d5859fb7171_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g89dda41651344ba7068cc68330dc11897a005d01390ebd6ee8a35b269583156eca3f09afc1d48eb6a5cb357a8e7f8b3ea3cdbb91858d7f1a8f95d369c8227495_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/blur-bread-breakfast-butter-1868928/",
+          "photographer": "Pexels",
+          "tags": "blur, bread, breakfast, butter, close-up, cooking, cuisine, dairy product, delicious, dining, dinner, dish, egg, focus, food, glass, healthy, juice, lunch, meal, meat, nutrition, plate, restaurant, salad, sandwich, still life, tableware, brown cooking, brown life, brown restaurant, brown healthy, brown meat, brown bread, brown egg, brown eggs, brown dinner, brown nutrition, brown breakfast, brown focus, brown sandwich",
+          "width": 2400,
+          "height": 1600
+        }
+      ]
+    },
+    {
+      "slug": "truffle-parmesan-fries",
+      "name": "Truffle Parmesan Fries",
+      "query": "parmesan truffle fries",
+      "folder": "starters",
+      "candidates": [
+        {
+          "id": 2057745,
+          "previewUrl": "https://pixabay.com/get/g6fcc92ad93c4e386e7f3f87e287ef75cba3faa59c22d8ed00988d4f60abe877f944e817cb639e0757313afa01a1209402471bc9fc8084b2810bc6beccfa360b9_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/gf886fcfdb1f86b48cee0738d231b73ea668b19ca66920ec02f5a8e699cd943c7a27c5e74625e1e489b5868fe6eb81ff2ceface0534855a158708cc055a29e516_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/valentines-day-chocolates-candies-2057745/",
+          "photographer": "JillWellington",
+          "tags": "valentine's day, chocolates, candies, confections, confectionery, sweets, bonbons, heart, love, valentine, red, romance, romantic, gift, valentine's day, valentine's day, valentine's day, valentine's day, valentine's day, chocolates, chocolates, chocolates, sweets, heart, love, love, valentine, valentine, gift",
+          "width": 5760,
+          "height": 3840
+        },
+        {
+          "id": 3547078,
+          "previewUrl": "https://pixabay.com/get/g6298881ff985f25ef9ead027d1a929d11538ad4286da1ed486a2ea6fcd4d4759a43085f9cc660f6948c33a3346be157aedb70d49c453ee62144a44d52f557153_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g73d10bd60c9c7206962d8354c409f1e857e0dec139e679fcb8cfc2e530bd82aeed7631c64271af83e58ef3c10f64ff180e9881a8f8a0178d0148c0e96f0f4331_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/pasta-italian-cuisine-dish-3547078/",
+          "photographer": "RitaE",
+          "tags": "pasta, italian cuisine, dish, spaghetti, noodles, starter, scampi, parmesan, cheese, food, pasta, pasta, pasta, pasta, pasta, spaghetti",
+          "width": 4394,
+          "height": 2393
+        },
+        {
+          "id": 693645,
+          "previewUrl": "https://pixabay.com/get/g83d2f88cf348b22d446955a091dfaea94d89aecf8dd577f02e1db8ba437d9ee5addc682c1b2165387a70b51415cf10e1_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/ga65ae077b99023234b1cd6c66188c7cd39ab9d60d3512a4aec850ffb700d44f649e6cc8eea2e6b5b7931461c2d75ef19c970f2699bcedfdc59c34ee9417ea256_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/cake-pops-pastries-food-dessert-693645/",
+          "photographer": "Hans",
+          "tags": "cake pops, pastries, food, dessert, sweet, lolly, chocolate, chocolate praline, balls, nibble, candy, tasty, delicious, confectionery, chocolate, chocolate, chocolate, chocolate, chocolate, candy",
+          "width": 4608,
+          "height": 3456
+        }
+      ]
+    },
+    {
+      "slug": "classic-house-cheeseburger",
+      "name": "Classic House Cheeseburger",
+      "query": "gourmet cheeseburger plate",
+      "folder": "burgers",
+      "candidates": [
+        {
+          "id": 7221436,
+          "previewUrl": "https://pixabay.com/get/g756c287a8a6688964fbc9136db1d28a30e6cf4f004122f06918dbb6ef9052b3fd89f798522c3764ab877dacee72a8585831833c0a9271a611ec695c186aad2b5_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g6920f052424828ae84589b3fbeaaa03c6025532bf08195ce20a9e9cf0c776d6c3fa82aa86d2226593e5035fdfef4bc266df7df6c105efa3642d5d7e826ac216f_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/burger-cheeseburger-fast-food-7221436/",
+          "photographer": "RitaE",
+          "tags": "burger, cheeseburger, fast food, hamburger, yummy, meal, lunch, dinner, burger, burger, burger, burger, burger, cheeseburger, hamburger",
+          "width": 5869,
+          "height": 3913
+        },
+        {
+          "id": 1553287,
+          "previewUrl": "https://pixabay.com/get/g7ac0dc405b781a9cc896847290a1f88e6f12e793da58b36499807d3cd7fb3feba439ff786b9c7e2e10ecd7d2ce637a3acf621d3fcc5aa4d2c55b9485c955e0e8_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/gda690b5bf1d664833761f4010e6bede3ec82a8516af8df58fd84d2dd6e6386aa703c36cb8f844ea7eaca73fb359b512dae0e60af5f0636fb65aef305df072430_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/hamburger-sandwich-food-fast-food-1553287/",
+          "photographer": "Fabricio_Macedo_Photo",
+          "tags": "hamburger, sandwich, food, fast food, snack, to cook, fat, restaurant, eating out, bacon, lettuce, cafeteria, french fries, cholesterol, beef, mozzarella, tomato, bread, hungry, hamburger, hamburger, sandwich, sandwich, sandwich, sandwich, fast food, fast food, fast food, fast food, fast food, fat, cafeteria, cholesterol, cholesterol, cholesterol, cholesterol",
+          "width": 5456,
+          "height": 3064
+        },
+        {
+          "id": 2559087,
+          "previewUrl": "https://pixabay.com/get/gcf84d0b313af3ae54119506c3d1dfba4d6ec46124d698aea09ce35c16c7689a91926a912f8b679de6521274975f59faa8322776d52f9e4a8f88b7a38cbf12061_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/gfad51ad07bb43c39bbcd322a5b1b8f61b760cc509902cfc17e1507d6dfcceffbe534a29d281091e413725d1ba40fd82f3869cd6a19a33564e7ba18ade4ea7b56_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/burger-food-cheese-vegetables-meat-2559087/",
+          "photographer": "StockSnap",
+          "tags": "burger, food, cheese, vegetables, meat, ham, breakfast, snacks, bread, sandwich, gravy, sauce, restaurant, burger, burger, burger, burger, burger",
+          "width": 6000,
+          "height": 4000
+        }
+      ]
+    },
+    {
+      "slug": "penne-arrabbiata",
+      "name": "Penne Arrabbiata",
+      "query": "penne arrabbiata pasta",
+      "folder": "mains",
+      "candidates": [
+        {
+          "id": 1114066,
+          "previewUrl": "https://pixabay.com/get/g0fdfc0a021d59924fb9926efa8146b69fdf8769579a05d027b0ff8265e98426c5773abc2b99535f7bacc2c835ad9934a5fcf03cacc09212e94c9730481faf9ed_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g924a62d1eb53b6779603502363a43af96d4b84f2437922ecefea9210075a27625ba85e7b5f15bea857cb33d7f1150d6543a097121497fc67fb9be7d68bafa8bc_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/tomatoes-pasta-food-ingredients-1114066/",
+          "photographer": "diapicard",
+          "tags": "tomatoes, pasta, food, ingredients, red tomatoes, fruits, dew, dewdrops, wet, healthy, organic, natural, fresh, diet, cooking, tomatoes, tomatoes, pasta, cooking, cooking, cooking, cooking, cooking",
+          "width": 4928,
+          "height": 3264
+        },
+        {
+          "id": 7953208,
+          "previewUrl": "https://pixabay.com/get/gf2054608e4a443a89452397f3558c67819972c9a7be6567949bcfa18d8574e497902a6fe929cdd2511e161d7220f70813e0da16d219badd3d4ef8f1d10e01c63_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g86ea92cc281a9b58e4c256be2d94736780c480e5b9471040434e79caf2d4665a6918cdfc30e4455b15196639437a29b515d9e584a213f464da2579abc7660001_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/pasta-raw-carbohydrates-healthy-7953208/",
+          "photographer": "Сибирка",
+          "tags": "pasta, raw, carbohydrates, healthy, nutrition, diet, vegetarian, food, penne, pasta, pasta, pasta, pasta, pasta",
+          "width": 5184,
+          "height": 3456
+        },
+        {
+          "id": 569072,
+          "previewUrl": "https://pixabay.com/get/gfe2965e516fca871d1ad57643beb206818323643c84c6f3c9626559ed287cf6a3ca4762a2b334c2f4ca93d4290587b4b_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g5d9fe1845fe3e885bc41916a993323b1d7b17b6252afb6924baa7301f5c9d656a1d1b2e0ca0a42c6f197c3de789b9bf007c6060417a9bea9f209a1f5c2c40dd2_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/penne-pasta-plate-pasta-plate-569072/",
+          "photographer": "JESHOOTS-com",
+          "tags": "penne, pasta, plate, pasta plate, plate of pasta, penne pasta, food, meal, italian cuisine, italian, pasta dish, pasta, pasta, pasta, pasta, pasta",
+          "width": 5472,
+          "height": 3648
+        }
+      ]
+    },
+    {
+      "slug": "wild-mushroom-risotto",
+      "name": "Wild Mushroom Risotto",
+      "query": "wild mushroom risotto parmesan",
+      "folder": "mains",
+      "candidates": [
+        {
+          "id": 5981246,
+          "previewUrl": "https://pixabay.com/get/g25e2b7274b887856bdea0e04308a7e5bda78441c7c5dcd8b38dc6fe6336cae8bf59a933a2ac02428e1e7ae3af173a7ab405338c8506142126adce32d19b787c4_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g862e733a04fc0bdd6a60388abfcad64eefa1724945f40c5aadca59166d5a2aaaf93f9c2ff56ae76dd809dfcfa635a5e199c8d09bd02f1d693e8a8ea39ccf4533_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/food-risotto-flat-lay-dish-rice-5981246/",
+          "photographer": "romjanaly",
+          "tags": "food, risotto, flat lay, dish, rice, cuisine, meal, cheese, mushrooms, healthy, nutrition, tasty, delicious, snack, dinner, lunch, breakfast, bowl, plate, closeup, risotto, risotto, risotto, risotto, risotto",
+          "width": 6144,
+          "height": 4095
+        },
+        {
+          "id": 7564167,
+          "previewUrl": "https://pixabay.com/get/gc50109567a1487a31dd1fcb03ef24bd6d9be899ecd0177ce3b90f56577b24ee904fbe8f3476d95578acb3e18fdd8083385be426235442a7c426e7aa921c9e9c2_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/gc3373b166000b037a10102baa55eed71f8bf1481892acd21ecf73e9a678ee3837f2d9a627216ec252de8000532bed78c2782881fa2df72afc55a4d55cd90d007_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/toadstool-mushroom-fall-forest-7564167/",
+          "photographer": "platte15",
+          "tags": "toadstool, mushroom, fall, forest, nature, forest mushroom",
+          "width": 5055,
+          "height": 3370
+        },
+        {
+          "id": 8235504,
+          "previewUrl": "https://pixabay.com/get/g1cdf463b1e093eecbde132a6564309a6db9fa9a3131dbc0ade943f27782ce5599f25cc4f1533e7c0085e5df1d5e1adcd22241bd867a8546abc2d52e9ef35b683_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g5d00a134a82c1e1f9e13f8b338c4f8e41c1642ad8e6d878fc95272939c65392b498942aff678e47eb598a3f62024fbd9d1b8f9808001b4d21a7471e7031db1fa_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/disc-fungus-mushroom-forest-moss-8235504/",
+          "photographer": "jggrz",
+          "tags": "disc fungus, mushroom, forest, moss, spores, fern, nature, mushroom, mushroom, mushroom, mushroom, mushroom",
+          "width": 5000,
+          "height": 3333
+        }
+      ]
+    },
+    {
+      "slug": "classic-tiramisu",
+      "name": "Classic Tiramisu",
+      "query": "classic italian tiramisu cocoa",
+      "folder": "desserts",
+      "candidates": [
+        {
+          "id": 199281,
+          "previewUrl": "https://pixabay.com/get/ge90ff05bda736e5692063f29f90567b21171d221d1165d1f6490b92282de6cfd397a8dce464fd246b05bd0ea55e5772c_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/gd7b4c4e41b2d02517c5f5b3ef6dd1da0fc34cc62aebfbd0f17b7b3a225a80426b490ae6fe7a53223b92a1480f51e4c9e520c64bbee97475ae09a1e72b78e97da_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/tiramisu-dessert-food-sweet-199281/",
+          "photographer": "Birgit_H",
+          "tags": "tiramisu, dessert, food, sweet, italian, cocoa, tasty, fresh, delicious, calories, yummy, cake, confectionery, culinary, pastry, snack, brown cake, brown dessert, tiramisu, tiramisu, tiramisu, tiramisu, tiramisu",
+          "width": 4272,
+          "height": 2848
+        },
+        {
+          "id": 7030032,
+          "previewUrl": "https://pixabay.com/get/g37970bb93b54b5b529e17b85fab7a9a2e2fc557d2c00b3aab8ee86538eb0d98ccc3977fe9a22263b046889e4b8aa0fce8a527f2431513c586dacb8a94afde320_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/ga757a995112ad6428dccb15db00a94133c8896f1a703b8b327c36051ce22d1f0a150d5362301bb65bfdb2f142054b9906f12b06c69b04f22c3467a7235feac39_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/tiramisu-pastry-baked-sweets-7030032/",
+          "photographer": "yousafbhutta",
+          "tags": "tiramisu, pastry, baked, sweets, dessert, food, cook, baking, italian, tiramisu, tiramisu, tiramisu, tiramisu, tiramisu, food, baking, baking",
+          "width": 6000,
+          "height": 4000
+        },
+        {
+          "id": 1971552,
+          "previewUrl": "https://pixabay.com/get/g05cd95cc3c3e9745a741bd4054b32f91cc67ef89e353b784d9d0c379af67ed91f1d9a4cdfa3ea56b4a5244f59b5b9895d6993de601c1b11edc827de44c56fb63_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/ge35a98bb1bba560d2c84ac9351d92c479f58fd737ccb8f6b33c7b755f2390f365c02b6f0da7cd3c9562a79a3a06d9106e5a38de3a9379283faacd9e77fd811e1_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/cake-piece-plate-dessert-pastry-1971552/",
+          "photographer": "Daria-Yakovleva",
+          "tags": "cake, piece, plate, dessert, pastry, sweet, chocolate, cake slice, piece of cake, confectionery, bake, food, delicious, sweets, calories, eat, food photography, cake, cake, cake, cake, cake, dessert, food, food",
+          "width": 5536,
+          "height": 3766
+        }
+      ]
+    },
+    {
+      "slug": "basque-cheesecake",
+      "name": "Basque Cheesecake",
+      "query": "basque burnt cheesecake slice",
+      "folder": "desserts",
+      "candidates": [
+        {
+          "id": 4020975,
+          "previewUrl": "https://pixabay.com/get/ga4c0f0185f0d5ab7f4039ad0324b9f03bf7d73296219e4f4810e714fe2fc7a0118fe1863a51133989048bc8c4bee334dc20193ca2a25d30424d7f0392bca3555_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g5c9e5efad5ced2e27d89a89af472db3405125e4b6f49e86c7768460067a3378e530f37ace4c96c1d874aa04f8165400a3dc5d861d8d3fe7542ff839f8fabe5db_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/cake-cheese-cake-chocolate-food-4020975/",
+          "photographer": "orange31",
+          "tags": "cake, cheese cake, chocolate, food, dessert, sweet, delicious, cheese, sugar, table, homemade, confectionery, baked, bake, baked goods, flour, butter, chocolat, eat from, cafe, sweet dishes, sweetness, egg, cheese cake, cheese cake, cheese cake, cheese cake, cheese cake",
+          "width": 6000,
+          "height": 4000
+        },
+        {
+          "id": 1284548,
+          "previewUrl": "https://pixabay.com/get/g25fa3e80d0e251a9f2194a6ab9bcf1d9b283e60a88daa56e678d103e8b464986f12d77c2b149973d28bb348362505cc12bb8def09b7caf79a12871fcebc9f672_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g95859beeb6b4c75099132c33811c7a9b0fdcfbec144e1e402f133b6871921d59891041c38b7dca31211dbbc1d7016f9d06f6dc5ec0841e83c1cce832d1111e35_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/cake-torte-dessert-sweet-fruit-1284548/",
+          "photographer": "Pexels",
+          "tags": "cake, torte, dessert, sweet, fruit, pastry, cream, gourmet, fresh, food, confectionery, confections, baked, cake, cake, cake, cake, cake",
+          "width": 4928,
+          "height": 3264
+        },
+        {
+          "id": 1869227,
+          "previewUrl": "https://pixabay.com/get/g1cc3addd49f93a21e9df1a820c085795f2685324f64560b2525f3d9233808b47e39b4a02e3f5f8c86163b9ad91a5d6bbb048daed410f12ec95a5edab298253d6_640.jpg",
+          "downloadUrl": "https://pixabay.com/get/g91fe9faf512286e2945eab93046ece9beeb98ba62ce7080974aa9163848370988e22857920a67627ec170c076e3843ff2570a908942e96e0a6b24e04bb262b0b_1280.jpg",
+          "pageUrl": "https://pixabay.com/photos/cake-cheesecake-cinnamon-sticks-1869227/",
+          "photographer": "Pexels",
+          "tags": "cake, cheesecake, cinnamon sticks, cinnamon, pastry, sweet, close up, eat, slice, sliced cake, delicious, food, plate, food photography, cake, cake, cake, cake, cake, cheesecake",
+          "width": 5184,
+          "height": 3456
+        }
+      ]
+    }
+  ]
+}

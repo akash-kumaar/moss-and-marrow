@@ -1,0 +1,70 @@
+services:
+  database:
+    image: mongo:7.0
+    container_name: moss_marrow_db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-moss_admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-moss_secure_password}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-moss_and_marrow}
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: moss_marrow_backend
+    restart: unless-stopped
+    environment:
+      PORT: 5000
+      HOST: 0.0.0.0
+      NODE_ENV: production
+      MONGODB_URI: ${MONGODB_URI:-mongodb://moss_admin:moss_secure_password@database:27017/moss_and_marrow?authSource=admin}
+      CLIENT_URL: ${CLIENT_URL:-http://localhost:80}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-replace-with-a-secure-random-secret}
+      PIXABAY_API_KEY: ${PIXABAY_API_KEY:-}
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:5000/api/v1/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api/v1
+    container_name: moss_marrow_frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - internal_network
+
+networks:
+  internal_network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+    driver: local
+
