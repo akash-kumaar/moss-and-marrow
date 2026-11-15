@@ -142,12 +142,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Run Trivy filesystem scan (${{ matrix.app }})
+      - name: Run Trivy filesystem scan (table output)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: "fs"
           scan-ref: ${{ matrix.path }}
           format: "table"
+          severity: "CRITICAL,HIGH"
+          ignore-unfixed: true
+
+      - name: Run Trivy filesystem scan (SARIF report)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: "fs"
+          scan-ref: ${{ matrix.path }}
+          format: "sarif"
           output: "trivy-${{ matrix.app }}-fs.sarif"
           severity: "CRITICAL,HIGH"
           exit-code: "1"
@@ -210,12 +219,21 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.app }}
           cache-to: type=gha,mode=max,scope=${{ matrix.app }}
 
-      - name: Run Trivy container image scan (${{ matrix.app }})
+      - name: Run Trivy container image scan (table output)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: "image"
           image-ref: moss-marrow-scan/${{ matrix.app }}:${{ github.sha }}
           format: "table"
+          severity: "CRITICAL,HIGH"
+          ignore-unfixed: true
+
+      - name: Run Trivy container image scan (SARIF report)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: "image"
+          image-ref: moss-marrow-scan/${{ matrix.app }}:${{ github.sha }}
+          format: "sarif"
           output: "trivy-${{ matrix.app }}-image.sarif"
           severity: "CRITICAL,HIGH"
           exit-code: "1"

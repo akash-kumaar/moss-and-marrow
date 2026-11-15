@@ -1,5 +1,5 @@
 # Stage 1: Build the React application with Vite
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
@@ -21,6 +21,9 @@ RUN npm run build
 
 # Stage 2: Serve the production bundle with Nginx Alpine
 FROM nginx:1.27-alpine
+
+# Patch underlying Alpine OS packages against known CVEs
+RUN apk update && apk upgrade --no-cache
 
 # Remove default nginx configuration and static site
 RUN rm -rf /usr/share/nginx/html/* /etc/nginx/conf.d/default.conf

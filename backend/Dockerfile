@@ -1,4 +1,7 @@
-FROM node:20-alpine
+FROM node:22-alpine
+
+# Upgrade base Alpine packages to patch known OS-level CVEs
+RUN apk update && apk upgrade --no-cache
 
 # Set node environment
 ENV NODE_ENV=production
