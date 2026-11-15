@@ -1,0 +1,28 @@
+# =============================================================================
+# ConfigMap — Non-secret runtime configuration
+# MOSS & MARROW
+#
+# Secrets (MONGODB_URI, JWT_ACCESS_SECRET, etc.) are created separately by
+# the CD workflow and are NEVER stored in this file.
+# =============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: moss-marrow-config
+  namespace: moss-marrow
+  labels:
+    app.kubernetes.io/name: moss-marrow
+    app.kubernetes.io/managed-by: github-actions
+data:
+  # The CLIENT_URL must match the domain/IP where the frontend is accessible.
+  # Update this value to reflect your production domain.
+  CLIENT_URL: "http://your-production-domain.com"
+
+  # MongoDB database name (URI with credentials is in the Secret, not here).
+  MONGO_INITDB_DATABASE: "moss_and_marrow"
+
+  # Kubernetes service DNS for internal reference documentation.
+  # Nginx in the frontend container will use this to proxy API requests.
+  BACKEND_SERVICE_DNS: "moss-marrow-backend.moss-marrow.svc.cluster.local"
+

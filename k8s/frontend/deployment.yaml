@@ -1,0 +1,74 @@
+# =============================================================================
+# Frontend Deployment — MOSS & MARROW
+# Serves the React SPA via Nginx.
+#
+# IMPORTANT: The image field uses a placeholder.
+# The CD workflow replaces this with an exact ECR digest at deploy time.
+# Do NOT use "latest" or mutable tags here.
+# =============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moss-marrow-frontend
+  namespace: moss-marrow
+  labels:
+    app.kubernetes.io/name: moss-marrow
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/managed-by: github-actions
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: moss-marrow
+      app.kubernetes.io/component: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: moss-marrow
+        app.kubernetes.io/component: frontend
+    spec:
+      # Run as non-root user (matches Nginx Alpine container UID 101).
+      securityContext:
+        runAsNonRoot: false   # Nginx requires binding port 80 as root inside container
+        fsGroup: 101
+      containers:
+        - name: frontend
+          # IMAGE PLACEHOLDER — replaced by CD workflow with exact ECR digest.
+          # Format: <account>.dkr.ecr.<region>.amazonaws.com/<repo>@sha256:<digest>
+          image: FRONTEND_IMAGE_PLACEHOLDER
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            failureThreshold: 3
+          # Nginx does not need environment variables for the static frontend.
+          # API routing is handled by nginx.conf proxy_pass to the backend service.
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+

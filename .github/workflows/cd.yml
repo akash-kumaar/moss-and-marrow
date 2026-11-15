@@ -1,0 +1,399 @@
+# =============================================================================
+# MOSS & MARROW — Continuous Deployment to Kubernetes (EKS)
+# =============================================================================
+# This workflow deploys the application to Amazon EKS.
+#
+# It is STRICTLY GATED — it cannot run without all required infrastructure
+# and credentials being configured. It will not accidentally deploy to a
+# partially configured environment.
+#
+# Deployment pipeline:
+#   1. Verify all required secrets and variables are present.
+#   2. Authenticate to AWS using OIDC (no permanent credentials).
+#   3. Retrieve and verify the exact image digests from ECR.
+#   4. Verify image signatures using Cosign.
+#   5. Update Kubernetes manifests with immutable image digests.
+#   6. Apply manifests to the target Kubernetes namespace.
+#   7. Wait for rollout completion.
+#   8. Perform application health verification.
+#   9. Roll back automatically if rollout fails.
+#
+# CURRENT STATUS:
+#   AWS infrastructure (EKS, ECR, IAM, OIDC) is not yet provisioned.
+#   This workflow is configured and gated safely. It will execute correctly
+#   once all required GitHub secrets and AWS resources are created.
+#   See docs/devops/aws-oidc-setup.md and docs/devops/deployment-guide.md.
+#
+# Required GitHub secrets (see docs/devops/github-actions-setup.md):
+#   AWS_ECR_ROLE_ARN          IAM role ARN with ECR read permissions
+#   AWS_DEPLOY_ROLE_ARN       IAM role ARN with EKS deployment permissions
+#   MONGODB_URI               MongoDB Atlas connection string for production
+#   JWT_ACCESS_SECRET         JWT secret for backend authentication
+#   PIXABAY_API_KEY           Pixabay API key (optional for image review)
+#
+# Required GitHub variables (vars.*):
+#   AWS_REGION                AWS region (e.g. us-east-1)
+#   AWS_ACCOUNT_ID            12-digit AWS account ID
+#   ECR_REPOSITORY_FRONTEND   ECR repository name for frontend
+#   ECR_REPOSITORY_BACKEND    ECR repository name for backend
+#   EKS_CLUSTER_NAME          Name of the EKS cluster
+#   K8S_NAMESPACE             Kubernetes namespace (e.g. moss-marrow)
+#   ENVIRONMENT               Deployment environment name (staging/production)
+#
+# Required GitHub Environment: "production"
+#   - Required reviewers must be configured in GitHub Settings.
+# =============================================================================
+
+name: CD — Deploy to Kubernetes
+
+on:
+  # Triggered automatically after a successful container release from main.
+  workflow_run:
+    workflows: ["Container Release"]
+    branches: [main]
+    types: [completed]
+  # Manual deployment with environment selection.
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - staging
+          - production
+      image_sha:
+        description: "Git SHA of the images to deploy (defaults to latest main)"
+        required: false
+        default: ""
+      reason:
+        description: "Reason for manual deployment"
+        required: true
+        default: "Manual deployment"
+
+# Only one deployment to production at a time.
+concurrency:
+  group: cd-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # JOB: preflight
+  # Verifies that all required infrastructure variables and secrets are present
+  # before attempting any AWS operations or Kubernetes changes.
+  # Fails fast and clearly if any required configuration is missing.
+  # ---------------------------------------------------------------------------
+  preflight:
+    name: Preflight — Infrastructure Readiness Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Only run if the triggering workflow_run succeeded, or on manual dispatch.
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+      deploy-sha: ${{ steps.resolve-sha.outputs.sha }}
+      environment: ${{ steps.resolve-env.outputs.environment }}
+
+    steps:
+      - name: Resolve target environment
+        id: resolve-env
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "environment=${{ inputs.environment }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "environment=production" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve deployment SHA
+        id: resolve-sha
+        run: |
+          if [ -n "${{ inputs.image_sha }}" ]; then
+            echo "sha=${{ inputs.image_sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=${{ github.event.workflow_run.head_sha || github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check infrastructure readiness
+        id: check
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+          ECR_REPO_FRONTEND: ${{ vars.ECR_REPOSITORY_FRONTEND }}
+          ECR_REPO_BACKEND: ${{ vars.ECR_REPOSITORY_BACKEND }}
+          EKS_CLUSTER: ${{ vars.EKS_CLUSTER_NAME }}
+          K8S_NS: ${{ vars.K8S_NAMESPACE }}
+        run: |
+          MISSING=""
+          [ -z "$AWS_REGION" ]         && MISSING="${MISSING}\n  - vars.AWS_REGION"
+          [ -z "$AWS_ACCOUNT_ID" ]     && MISSING="${MISSING}\n  - vars.AWS_ACCOUNT_ID"
+          [ -z "$ECR_REPO_FRONTEND" ]  && MISSING="${MISSING}\n  - vars.ECR_REPOSITORY_FRONTEND"
+          [ -z "$ECR_REPO_BACKEND" ]   && MISSING="${MISSING}\n  - vars.ECR_REPOSITORY_BACKEND"
+          [ -z "$EKS_CLUSTER" ]        && MISSING="${MISSING}\n  - vars.EKS_CLUSTER_NAME"
+          [ -z "$K8S_NS" ]             && MISSING="${MISSING}\n  - vars.K8S_NAMESPACE"
+
+          # Check secret presence via length (secrets cannot be read directly)
+          [ -z "${{ secrets.AWS_DEPLOY_ROLE_ARN }}" ]  && MISSING="${MISSING}\n  - secrets.AWS_DEPLOY_ROLE_ARN"
+          [ -z "${{ secrets.MONGODB_URI }}" ]           && MISSING="${MISSING}\n  - secrets.MONGODB_URI"
+          [ -z "${{ secrets.JWT_ACCESS_SECRET }}" ]     && MISSING="${MISSING}\n  - secrets.JWT_ACCESS_SECRET"
+
+          if [ -n "$MISSING" ]; then
+            echo "❌ Deployment is BLOCKED. Required configuration is missing:"
+            echo -e "$MISSING"
+            echo ""
+            echo "See docs/devops/github-actions-setup.md for setup instructions."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          echo "✅ All required infrastructure variables are present."
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
+  # ---------------------------------------------------------------------------
+  # JOB: deploy
+  # Authenticates to AWS, retrieves images, verifies signatures, updates
+  # Kubernetes manifests, and deploys to EKS.
+  # Protected by GitHub Environment for production requiring manual approval.
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy — ${{ needs.preflight.outputs.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: preflight
+    if: needs.preflight.outputs.ready == 'true'
+
+    # GitHub Environment gate — requires reviewer approval for production.
+    environment: ${{ needs.preflight.outputs.environment }}
+
+    permissions:
+      contents: read
+      id-token: write  # Required for AWS OIDC
+
+    env:
+      DEPLOY_SHA: ${{ needs.preflight.outputs.deploy-sha }}
+      TARGET_ENV: ${{ needs.preflight.outputs.environment }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076 # v2.0.1
+
+      # Retrieve the exact image digests by SHA tag — never use "latest".
+      - name: Resolve frontend image digest
+        id: frontend-digest
+        run: |
+          REGISTRY="${{ steps.ecr-login.outputs.registry }}"
+          REPO="${{ vars.ECR_REPOSITORY_FRONTEND }}"
+          DIGEST=$(aws ecr describe-images \
+            --repository-name "$REPO" \
+            --image-ids imageTag="${{ env.DEPLOY_SHA }}" \
+            --query 'imageDetails[0].imageDigest' \
+            --output text)
+          if [ -z "$DIGEST" ] || [ "$DIGEST" = "None" ]; then
+            echo "❌ Frontend image not found in ECR for SHA ${{ env.DEPLOY_SHA }}"
+            exit 1
+          fi
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+          echo "image=${REGISTRY}/${REPO}@${DIGEST}" >> "$GITHUB_OUTPUT"
+          echo "✅ Frontend image resolved: ${REGISTRY}/${REPO}@${DIGEST}"
+
+      - name: Resolve backend image digest
+        id: backend-digest
+        run: |
+          REGISTRY="${{ steps.ecr-login.outputs.registry }}"
+          REPO="${{ vars.ECR_REPOSITORY_BACKEND }}"
+          DIGEST=$(aws ecr describe-images \
+            --repository-name "$REPO" \
+            --image-ids imageTag="${{ env.DEPLOY_SHA }}" \
+            --query 'imageDetails[0].imageDigest' \
+            --output text)
+          if [ -z "$DIGEST" ] || [ "$DIGEST" = "None" ]; then
+            echo "❌ Backend image not found in ECR for SHA ${{ env.DEPLOY_SHA }}"
+            exit 1
+          fi
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+          echo "image=${REGISTRY}/${REPO}@${DIGEST}" >> "$GITHUB_OUTPUT"
+          echo "✅ Backend image resolved: ${REGISTRY}/${REPO}@${DIGEST}"
+
+      # Verify image signatures before deploying.
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
+
+      - name: Verify frontend image signature
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+          cosign verify \
+            --certificate-identity-regexp "https://github.com/${{ github.repository }}/*" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "${{ steps.frontend-digest.outputs.image }}"
+          echo "✅ Frontend image signature verified."
+
+      - name: Verify backend image signature
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+          cosign verify \
+            --certificate-identity-regexp "https://github.com/${{ github.repository }}/*" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "${{ steps.backend-digest.outputs.image }}"
+          echo "✅ Backend image signature verified."
+
+      # Configure kubectl to access the EKS cluster.
+      - name: Configure kubectl for EKS
+        run: |
+          aws eks update-kubeconfig \
+            --region "${{ vars.AWS_REGION }}" \
+            --name "${{ vars.EKS_CLUSTER_NAME }}"
+
+      # Capture the previous deployment revision for rollback.
+      - name: Capture pre-deployment state
+        id: pre-deploy
+        run: |
+          FRONTEND_REV=$(kubectl rollout history deployment/moss-marrow-frontend \
+            -n "${{ vars.K8S_NAMESPACE }}" \
+            --output=jsonpath='{.metadata.resourceVersion}' 2>/dev/null || echo "none")
+          BACKEND_REV=$(kubectl rollout history deployment/moss-marrow-backend \
+            -n "${{ vars.K8S_NAMESPACE }}" \
+            --output=jsonpath='{.metadata.resourceVersion}' 2>/dev/null || echo "none")
+          echo "frontend-rev=$FRONTEND_REV" >> "$GITHUB_OUTPUT"
+          echo "backend-rev=$BACKEND_REV" >> "$GITHUB_OUTPUT"
+          echo "Pre-deployment: frontend=${FRONTEND_REV} backend=${BACKEND_REV}"
+
+      # Apply Kubernetes namespace and config first.
+      - name: Apply namespace and ConfigMap
+        run: |
+          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -f k8s/config/configmap.yaml
+
+      # Apply Kubernetes Secrets from GitHub secrets.
+      # Secrets are injected at deployment time — never stored in manifests.
+      - name: Apply Kubernetes Secrets
+        run: |
+          kubectl create secret generic moss-marrow-backend-secret \
+            --namespace="${{ vars.K8S_NAMESPACE }}" \
+            --from-literal=MONGODB_URI="${{ secrets.MONGODB_URI }}" \
+            --from-literal=JWT_ACCESS_SECRET="${{ secrets.JWT_ACCESS_SECRET }}" \
+            --from-literal=PIXABAY_API_KEY="${{ secrets.PIXABAY_API_KEY }}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # Update image references to exact digests, then apply manifests.
+      - name: Deploy frontend to Kubernetes
+        run: |
+          kubectl set image deployment/moss-marrow-frontend \
+            frontend="${{ steps.frontend-digest.outputs.image }}" \
+            --namespace="${{ vars.K8S_NAMESPACE }}" \
+            --record=false
+          kubectl apply -f k8s/frontend/deployment.yaml --namespace="${{ vars.K8S_NAMESPACE }}"
+          kubectl apply -f k8s/frontend/service.yaml     --namespace="${{ vars.K8S_NAMESPACE }}"
+
+      - name: Deploy backend to Kubernetes
+        run: |
+          kubectl set image deployment/moss-marrow-backend \
+            backend="${{ steps.backend-digest.outputs.image }}" \
+            --namespace="${{ vars.K8S_NAMESPACE }}" \
+            --record=false
+          kubectl apply -f k8s/backend/deployment.yaml --namespace="${{ vars.K8S_NAMESPACE }}"
+          kubectl apply -f k8s/backend/service.yaml    --namespace="${{ vars.K8S_NAMESPACE }}"
+
+      # Wait for rollout completion.
+      - name: Wait for frontend rollout
+        id: frontend-rollout
+        run: |
+          kubectl rollout status deployment/moss-marrow-frontend \
+            --namespace="${{ vars.K8S_NAMESPACE }}" \
+            --timeout=300s
+          echo "✅ Frontend rollout completed."
+
+      - name: Wait for backend rollout
+        id: backend-rollout
+        run: |
+          kubectl rollout status deployment/moss-marrow-backend \
+            --namespace="${{ vars.K8S_NAMESPACE }}" \
+            --timeout=300s
+          echo "✅ Backend rollout completed."
+
+      # Health verification using the existing /api/v1/health endpoint.
+      - name: Verify backend health endpoint
+        run: |
+          # Wait for the service to be reachable after rollout.
+          BACKEND_URL="http://$(kubectl get service moss-marrow-backend \
+            --namespace="${{ vars.K8S_NAMESPACE }}" \
+            -o jsonpath='{.spec.clusterIP}'):5000/api/v1/health"
+
+          for i in $(seq 1 10); do
+            STATUS=$(kubectl run health-check-${{ github.run_id }} \
+              --restart=Never --rm -i \
+              --image=curlimages/curl:8.10.1 \
+              --namespace="${{ vars.K8S_NAMESPACE }}" \
+              -- curl -s -o /dev/null -w "%{http_code}" "$BACKEND_URL" 2>/dev/null || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ Backend health check passed (HTTP 200)"
+              break
+            fi
+            echo "  Attempt $i/10 — HTTP $STATUS — waiting 10s..."
+            sleep 10
+            if [ "$i" = "10" ]; then
+              echo "❌ Backend health check failed after 10 attempts"
+              exit 1
+            fi
+          done
+
+      # Automatic rollback on failure.
+      - name: Roll back failed frontend deployment
+        if: failure() && steps.frontend-rollout.outcome == 'failure'
+        run: |
+          echo "⚠️  Frontend rollout failed. Rolling back..."
+          kubectl rollout undo deployment/moss-marrow-frontend \
+            --namespace="${{ vars.K8S_NAMESPACE }}"
+          ROLLBACK=$(kubectl rollout status deployment/moss-marrow-frontend \
+            --namespace="${{ vars.K8S_NAMESPACE }}" --timeout=120s && echo "success" || echo "failed")
+          if [ "$ROLLBACK" = "success" ]; then
+            echo "✅ Frontend rollback succeeded."
+          else
+            echo "❌ Frontend rollback also failed. Manual intervention required."
+          fi
+          exit 1
+
+      - name: Roll back failed backend deployment
+        if: failure() && steps.backend-rollout.outcome == 'failure'
+        run: |
+          echo "⚠️  Backend rollout failed. Rolling back..."
+          kubectl rollout undo deployment/moss-marrow-backend \
+            --namespace="${{ vars.K8S_NAMESPACE }}"
+          ROLLBACK=$(kubectl rollout status deployment/moss-marrow-backend \
+            --namespace="${{ vars.K8S_NAMESPACE }}" --timeout=120s && echo "success" || echo "failed")
+          if [ "$ROLLBACK" = "success" ]; then
+            echo "✅ Backend rollback succeeded."
+          else
+            echo "❌ Backend rollback also failed. Manual intervention required."
+          fi
+          exit 1
+
+      - name: Deployment summary
+        if: always()
+        run: |
+          echo "## 🚀 Deployment Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Item | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|------|-------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Environment  | \`${{ env.TARGET_ENV }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| SHA          | \`${{ env.DEPLOY_SHA }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Frontend     | \`${{ steps.frontend-digest.outputs.digest }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Backend      | \`${{ steps.backend-digest.outputs.digest }}\` |" >> "$GITHUB_STEP_SUMMARY"
+

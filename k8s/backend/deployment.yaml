@@ -1,0 +1,104 @@
+# =============================================================================
+# Backend Deployment — MOSS & MARROW
+# Runs the Express API server.
+#
+# IMPORTANT: The image field uses a placeholder.
+# The CD workflow replaces this with an exact ECR digest at deploy time.
+#
+# Secrets (MONGODB_URI, JWT_ACCESS_SECRET) are injected by the CD workflow
+# using kubectl create secret. They are NEVER stored in this manifest.
+# =============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moss-marrow-backend
+  namespace: moss-marrow
+  labels:
+    app.kubernetes.io/name: moss-marrow
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/managed-by: github-actions
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: moss-marrow
+      app.kubernetes.io/component: backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: moss-marrow
+        app.kubernetes.io/component: backend
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000   # Matches the "node" user created in the backend Dockerfile
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: backend
+          # IMAGE PLACEHOLDER — replaced by CD workflow with exact ECR digest.
+          image: BACKEND_IMAGE_PLACEHOLDER
+          ports:
+            - name: api
+              containerPort: 5000
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "5000"
+            - name: HOST
+              value: "0.0.0.0"
+            - name: CLIENT_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: moss-marrow-config
+                  key: CLIENT_URL
+            # Secrets are injected from the Kubernetes Secret created by the CD workflow.
+            # They are never embedded in this YAML file.
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: moss-marrow-backend-secret
+                  key: MONGODB_URI
+            - name: JWT_ACCESS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: moss-marrow-backend-secret
+                  key: JWT_ACCESS_SECRET
+            - name: PIXABAY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: moss-marrow-backend-secret
+                  key: PIXABAY_API_KEY
+                  optional: true
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            failureThreshold: 3
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+

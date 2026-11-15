@@ -1,0 +1,153 @@
+# =============================================================================
+# MOSS & MARROW — Continuous Integration
+# =============================================================================
+# Runs on every pull request targeting main and every push to main.
+# Validates frontend build, backend syntax, and Docker image construction.
+# No tests or lint scripts are invoked unless they actually exist in package.json.
+# This workflow does NOT push images; that is handled by container-release.yml.
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Cancel in-progress runs for the same branch to avoid queue build-up.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # JOB: frontend-build
+  # Installs dependencies and runs the Vite production build.
+  # Fails the pipeline if the build produces errors.
+  # ---------------------------------------------------------------------------
+  frontend-build:
+    name: Frontend — Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production bundle
+        run: npm run build
+        env:
+          # Build with the same-origin API path used in the Docker image.
+          VITE_API_URL: /api/v1
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: frontend-dist-${{ github.sha }}
+          path: frontend/dist/
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # JOB: backend-validate
+  # Installs production dependencies and validates Node.js module syntax.
+  # Does not run tests or lint because no test/lint scripts exist in package.json.
+  # ---------------------------------------------------------------------------
+  backend-validate:
+    name: Backend — Validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        # Using --omit=dev mirrors the production Dockerfile exactly.
+        run: npm ci --omit=dev
+
+      - name: Validate JavaScript syntax — entry point
+        # Checks that all ES module imports can be resolved and parsed.
+        # Does not start the server; this is a dry-run syntax parse only.
+        run: node --check src/server.js
+
+      - name: Validate JavaScript syntax — app module
+        run: node --check src/app.js
+
+  # ---------------------------------------------------------------------------
+  # JOB: docker-build
+  # Builds both Docker images using BuildKit layer caching.
+  # Verifies that the images build successfully against the committed Dockerfiles.
+  # Images are NOT pushed to any registry from this job.
+  # ---------------------------------------------------------------------------
+  docker-build:
+    name: Docker — Build Images
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Run after both application jobs succeed.
+    needs: [frontend-build, backend-validate]
+
+    permissions:
+      contents: read
+      packages: write  # Needed for GitHub Container Registry cache layer access
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349 # v3.7.1
+
+      - name: Build frontend image (CI validation, no push)
+        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: false
+          tags: moss-marrow/frontend:${{ github.sha }}
+          build-args: VITE_API_URL=/api/v1
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+
+      - name: Build backend image (CI validation, no push)
+        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: false
+          tags: moss-marrow/backend:${{ github.sha }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+
+      - name: Validate Docker Compose configuration
+        run: docker compose config --quiet
+

@@ -1,0 +1,267 @@
+# =============================================================================
+# MOSS & MARROW — Container Build, Sign, and Publish to ECR
+# =============================================================================
+# This workflow is the ONLY place Docker images are built and published.
+# It enforces the "build once, deploy digest" model.
+#
+# Pipeline:
+#   1. Build frontend and backend images with BuildKit.
+#   2. Push versioned images to Amazon ECR (requires AWS OIDC configuration).
+#   3. Generate SBOM (Software Bill of Materials) using Syft.
+#   4. Sign images using Cosign with GitHub OIDC (keyless signing).
+#   5. Generate and attach build provenance attestations.
+#   6. Output immutable image digests for the CD workflow to consume.
+#
+# STATUS OF AWS COMPONENTS:
+#   - AWS OIDC:              Configured but awaiting AWS infrastructure.
+#   - ECR push:              Configured but awaiting AWS infrastructure.
+#   - Cosign signing:        Configured but awaiting ECR setup.
+#   - SBOM upload to ECR:    Configured but awaiting ECR setup.
+#
+# Required GitHub secrets (see docs/devops/github-actions-setup.md):
+#   AWS_ACCOUNT_ID           Your 12-digit AWS account ID
+#   AWS_REGION               AWS region (e.g. us-east-1)
+#   AWS_ECR_ROLE_ARN         IAM role ARN with ECR push permissions
+#   ECR_REPOSITORY_FRONTEND  ECR repository name for frontend image
+#   ECR_REPOSITORY_BACKEND   ECR repository name for backend image
+#
+# Triggers:
+#   - Push to main (tagged release)
+#   - Manual dispatch (for ad-hoc release)
+#
+# SECURITY: This workflow ONLY runs on main branch pushes.
+# Pull requests from forks NEVER trigger this workflow.
+# =============================================================================
+
+name: Container Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for manual release"
+        required: true
+        default: "Manual release"
+
+concurrency:
+  group: container-release-${{ github.ref }}
+  cancel-in-progress: false  # Never cancel an in-progress release
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # JOB: build-and-publish
+  # Builds both images, publishes to ECR, signs, generates SBOM and provenance.
+  # ---------------------------------------------------------------------------
+  build-and-publish:
+    name: Build, Sign, and Publish Images
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      contents: read
+      id-token: write   # Required for AWS OIDC and Cosign keyless signing
+      packages: write   # Required for GHA cache layer access
+
+    outputs:
+      frontend-digest: ${{ steps.frontend-push.outputs.digest }}
+      backend-digest: ${{ steps.backend-push.outputs.digest }}
+      frontend-image: ${{ steps.ecr-login.outputs.registry }}/${{ vars.ECR_REPOSITORY_FRONTEND }}
+      backend-image: ${{ steps.ecr-login.outputs.registry }}/${{ vars.ECR_REPOSITORY_BACKEND }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349 # v3.7.1
+
+      # ------------------------------------------------------------------------
+      # AWS OIDC Authentication
+      # STATUS: Configured — awaiting AWS IAM OIDC provider and role setup.
+      # See docs/devops/aws-oidc-setup.md for required AWS configuration.
+      # ------------------------------------------------------------------------
+      - name: Configure AWS credentials (OIDC)
+        id: aws-auth
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        with:
+          role-to-assume: ${{ secrets.AWS_ECR_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          # This action exchanges the GitHub OIDC token for temporary AWS credentials.
+          # No permanent access keys are stored or used.
+        continue-on-error: true  # Allow build to continue for SBOM/provenance even without AWS
+
+      - name: Log AWS authentication result
+        run: |
+          if [ "${{ steps.aws-auth.outcome }}" = "success" ]; then
+            echo "✅ AWS OIDC authentication succeeded."
+          else
+            echo "⚠️  AWS OIDC authentication was skipped or failed."
+            echo "    ECR push will be disabled. Set required secrets to enable."
+            echo "    See docs/devops/aws-oidc-setup.md"
+          fi
+
+      - name: Log in to Amazon ECR
+        id: ecr-login
+        if: steps.aws-auth.outcome == 'success'
+        uses: aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076 # v2.0.1
+
+      # ------------------------------------------------------------------------
+      # Frontend Image — Build and Push
+      # ------------------------------------------------------------------------
+      - name: Build and push frontend image
+        id: frontend-push
+        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: ${{ steps.aws-auth.outcome == 'success' }}
+          load: ${{ steps.aws-auth.outcome != 'success' }}
+          tags: |
+            ${{ steps.ecr-login.outputs.registry && format('{0}/{1}:{2}', steps.ecr-login.outputs.registry, vars.ECR_REPOSITORY_FRONTEND, github.sha) || format('moss-marrow/frontend:{0}', github.sha) }}
+          build-args: VITE_API_URL=/api/v1
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+          # Provenance attestation captures build metadata for supply-chain verification.
+          provenance: true
+          sbom: true
+
+      - name: Log frontend image digest
+        run: |
+          echo "Frontend image digest: ${{ steps.frontend-push.outputs.digest }}"
+          echo "FRONTEND_DIGEST=${{ steps.frontend-push.outputs.digest }}" >> "$GITHUB_ENV"
+
+      # ------------------------------------------------------------------------
+      # Backend Image — Build and Push
+      # ------------------------------------------------------------------------
+      - name: Build and push backend image
+        id: backend-push
+        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: ${{ steps.aws-auth.outcome == 'success' }}
+          load: ${{ steps.aws-auth.outcome != 'success' }}
+          tags: |
+            ${{ steps.ecr-login.outputs.registry && format('{0}/{1}:{2}', steps.ecr-login.outputs.registry, vars.ECR_REPOSITORY_BACKEND, github.sha) || format('moss-marrow/backend:{0}', github.sha) }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+          provenance: true
+          sbom: true
+
+      - name: Log backend image digest
+        run: |
+          echo "Backend image digest: ${{ steps.backend-push.outputs.digest }}"
+          echo "BACKEND_DIGEST=${{ steps.backend-push.outputs.digest }}" >> "$GITHUB_ENV"
+
+      # ------------------------------------------------------------------------
+      # SBOM Generation — Syft
+      # Generates a CycloneDX SBOM for each image for supply-chain compliance.
+      # STATUS: SBOM generation runs locally. ECR upload requires AWS setup.
+      # ------------------------------------------------------------------------
+      - name: Install Syft for SBOM generation
+        uses: anchore/sbom-action/download-syft@61119d458adab75f756bc0b9e4bde25725f86a7a # v0.17.2
+
+      - name: Generate SBOM — frontend image
+        uses: anchore/sbom-action@61119d458adab75f756bc0b9e4bde25725f86a7a # v0.17.2
+        with:
+          image: moss-marrow/frontend:${{ github.sha }}
+          artifact-name: sbom-frontend-${{ github.sha }}.spdx.json
+          output-file: sbom-frontend.spdx.json
+          format: spdx-json
+        continue-on-error: true  # SBOM generation is non-blocking; image may not be locally loaded when pushed
+
+      - name: Generate SBOM — backend image
+        uses: anchore/sbom-action@61119d458adab75f756bc0b9e4bde25725f86a7a # v0.17.2
+        with:
+          image: moss-marrow/backend:${{ github.sha }}
+          artifact-name: sbom-backend-${{ github.sha }}.spdx.json
+          output-file: sbom-backend.spdx.json
+          format: spdx-json
+        continue-on-error: true
+
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        if: always()
+        with:
+          name: sbom-${{ github.sha }}
+          path: |
+            sbom-frontend.spdx.json
+            sbom-backend.spdx.json
+          retention-days: 90
+
+      # ------------------------------------------------------------------------
+      # Image Signing — Cosign (Keyless with GitHub OIDC)
+      # STATUS: Signing requires images to be published to ECR first.
+      # Signing is skipped when AWS authentication is not configured.
+      # ------------------------------------------------------------------------
+      - name: Install Cosign
+        if: steps.aws-auth.outcome == 'success'
+        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
+
+      - name: Sign frontend image with Cosign (keyless)
+        if: steps.aws-auth.outcome == 'success' && steps.frontend-push.outputs.digest != ''
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+          REGISTRY="${{ steps.ecr-login.outputs.registry }}"
+          REPO="${{ vars.ECR_REPOSITORY_FRONTEND }}"
+          DIGEST="${{ steps.frontend-push.outputs.digest }}"
+          cosign sign --yes "${REGISTRY}/${REPO}@${DIGEST}"
+          echo "✅ Frontend image signed: ${REGISTRY}/${REPO}@${DIGEST}"
+
+      - name: Sign backend image with Cosign (keyless)
+        if: steps.aws-auth.outcome == 'success' && steps.backend-push.outputs.digest != ''
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+          REGISTRY="${{ steps.ecr-login.outputs.registry }}"
+          REPO="${{ vars.ECR_REPOSITORY_BACKEND }}"
+          DIGEST="${{ steps.backend-push.outputs.digest }}"
+          cosign sign --yes "${REGISTRY}/${REPO}@${DIGEST}"
+          echo "✅ Backend image signed: ${REGISTRY}/${REPO}@${DIGEST}"
+
+      # ------------------------------------------------------------------------
+      # GitHub Artifact Attestation (Provenance)
+      # Attaches a signed provenance attestation to each published image.
+      # Links the image to this exact commit, workflow run, and repository.
+      # ------------------------------------------------------------------------
+      - name: Attest frontend build provenance
+        if: steps.aws-auth.outcome == 'success' && steps.frontend-push.outputs.digest != ''
+        uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v2.2.3
+        with:
+          subject-name: ${{ steps.ecr-login.outputs.registry }}/${{ vars.ECR_REPOSITORY_FRONTEND }}
+          subject-digest: ${{ steps.frontend-push.outputs.digest }}
+          push-to-registry: true
+
+      - name: Attest backend build provenance
+        if: steps.aws-auth.outcome == 'success' && steps.backend-push.outputs.digest != ''
+        uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v2.2.3
+        with:
+          subject-name: ${{ steps.ecr-login.outputs.registry }}/${{ vars.ECR_REPOSITORY_BACKEND }}
+          subject-digest: ${{ steps.backend-push.outputs.digest }}
+          push-to-registry: true
+
+      # ------------------------------------------------------------------------
+      # Release Summary
+      # ------------------------------------------------------------------------
+      - name: Publish release summary
+        if: always()
+        run: |
+          echo "## 🐳 Container Release Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Component | SHA | Digest |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-----------|-----|--------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Frontend  | \`${{ github.sha }}\` | \`${{ steps.frontend-push.outputs.digest }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Backend   | \`${{ github.sha }}\` | \`${{ steps.backend-push.outputs.digest }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ steps.aws-auth.outcome }}" != "success" ]; then
+            echo "⚠️ **ECR push, signing, and provenance are disabled.** Configure AWS secrets to enable." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "✅ Images pushed, signed, and attested to ECR." >> "$GITHUB_STEP_SUMMARY"
+          fi
+

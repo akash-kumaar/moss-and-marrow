@@ -1,0 +1,270 @@
+# =============================================================================
+# MOSS & MARROW — DevSecOps Security Scanning
+# =============================================================================
+# Performs multi-layer security analysis:
+#   1. Gitleaks  — secret and credential detection in source/history
+#   2. npm audit — dependency vulnerability scanning (frontend + backend)
+#   3. Trivy     — container and filesystem vulnerability scanning
+#   4. SonarQube — code quality analysis (requires SONAR_TOKEN secret)
+#
+# This workflow runs on PRs and main pushes.
+# It never executes untrusted code from fork pull requests with privileged
+# secrets — secrets are gated to trusted contexts only.
+# =============================================================================
+
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Daily scan at 02:00 UTC to catch newly disclosed vulnerabilities.
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # JOB: gitleaks
+  # Scans the repository and recent Git history for accidentally committed
+  # secrets, API keys, tokens, and credentials.
+  #
+  # IMPORTANT: This job uses no privileged secrets itself. It simply inspects
+  # source content. Fork pull requests are safe to scan.
+  # ---------------------------------------------------------------------------
+  gitleaks:
+    name: Secret Detection — Gitleaks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository with full history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # Fetch full history so Gitleaks can scan all commits, not just HEAD.
+          fetch-depth: 0
+
+      - name: Run Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITLEAKS_LICENSE is NOT required for public/FOSS repositories.
+          # For private repositories, set GITLEAKS_LICENSE in GitHub secrets.
+          # See: https://github.com/gitleaks/gitleaks-action#configuration
+
+  # ---------------------------------------------------------------------------
+  # JOB: npm-audit
+  # Audits Node.js dependency trees for known CVEs.
+  # Runs frontend and backend audits in parallel matrix strategy.
+  #
+  # Severity policy:
+  #   - critical: fail the pipeline
+  #   - high:     fail the pipeline
+  #   - moderate: report only
+  #   - low:      report only
+  #
+  # Do NOT use --force to auto-upgrade. Intentional upgrades belong in PRs.
+  # ---------------------------------------------------------------------------
+  npm-audit:
+    name: Dependency Audit — ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: frontend
+            path: frontend
+          - app: backend
+            path: backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: ${{ matrix.path }}/package-lock.json
+
+      - name: Install ${{ matrix.app }} dependencies
+        working-directory: ${{ matrix.path }}
+        run: npm ci --omit=dev
+
+      - name: Run npm audit (${{ matrix.app }})
+        working-directory: ${{ matrix.path }}
+        # Fail on critical and high severity vulnerabilities only.
+        # Moderate and low are reported but do not block the pipeline.
+        run: npm audit --audit-level=high --omit=dev
+
+  # ---------------------------------------------------------------------------
+  # JOB: trivy-filesystem
+  # Scans both frontend and backend source trees for vulnerabilities in
+  # language packages and configuration files using Trivy filesystem mode.
+  # Produces SARIF reports and uploads them to GitHub Security.
+  # ---------------------------------------------------------------------------
+  trivy-filesystem:
+    name: Trivy Filesystem Scan — ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      contents: read
+      security-events: write  # Required to upload SARIF to GitHub Security
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: frontend
+            path: frontend
+          - app: backend
+            path: backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Run Trivy filesystem scan (${{ matrix.app }})
+        uses: aquasecurity/trivy-action@18f2510ee396bbf400402947b394f2dd8c87dbb0 # v0.29.0
+        with:
+          scan-type: "fs"
+          scan-ref: ${{ matrix.path }}
+          format: "sarif"
+          output: "trivy-${{ matrix.app }}-fs.sarif"
+          severity: "CRITICAL,HIGH"
+          exit-code: "1"
+          ignore-unfixed: true
+
+      - name: Upload SARIF to GitHub Security
+        # Always run this step so results appear even when Trivy exits non-zero.
+        if: always()
+        uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3.28.0
+        with:
+          sarif_file: "trivy-${{ matrix.app }}-fs.sarif"
+          category: "trivy-${{ matrix.app }}-filesystem"
+
+  # ---------------------------------------------------------------------------
+  # JOB: trivy-docker
+  # Builds Docker images locally (no push) and scans them with Trivy.
+  # This catches vulnerabilities introduced by base images and OS packages
+  # that filesystem scans cannot see.
+  #
+  # Runs only on pushes to main and manual dispatch (not on every PR) to
+  # avoid unnecessary image build time.
+  # ---------------------------------------------------------------------------
+  trivy-docker:
+    name: Trivy Container Scan — ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+
+    permissions:
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: frontend
+            context: frontend
+            dockerfile: frontend/Dockerfile
+            build-args: "VITE_API_URL=/api/v1"
+          - app: backend
+            context: backend
+            dockerfile: backend/Dockerfile
+            build-args: ""
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349 # v3.7.1
+
+      - name: Build ${{ matrix.app }} image for scanning
+        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: false
+          load: true
+          tags: moss-marrow-scan/${{ matrix.app }}:${{ github.sha }}
+          build-args: ${{ matrix.build-args }}
+          cache-from: type=gha,scope=${{ matrix.app }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}
+
+      - name: Run Trivy container image scan (${{ matrix.app }})
+        uses: aquasecurity/trivy-action@18f2510ee396bbf400402947b394f2dd8c87dbb0 # v0.29.0
+        with:
+          scan-type: "image"
+          image-ref: moss-marrow-scan/${{ matrix.app }}:${{ github.sha }}
+          format: "sarif"
+          output: "trivy-${{ matrix.app }}-image.sarif"
+          severity: "CRITICAL,HIGH"
+          exit-code: "1"
+          ignore-unfixed: true
+
+      - name: Upload SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3.28.0
+        with:
+          sarif_file: "trivy-${{ matrix.app }}-image.sarif"
+          category: "trivy-${{ matrix.app }}-container"
+
+  # ---------------------------------------------------------------------------
+  # JOB: sonarqube
+  # Code quality analysis using SonarQube Cloud.
+  #
+  # STATUS: Configured but awaiting credentials.
+  # This job is skipped automatically until SONAR_TOKEN is set in GitHub
+  # repository secrets. It will not block the pipeline until activated.
+  #
+  # To activate:
+  #   1. Create a SonarQube Cloud account at https://sonarcloud.io
+  #   2. Import this repository.
+  #   3. Add SONAR_TOKEN and SONAR_ORGANIZATION to GitHub repository secrets.
+  #   4. Add sonar-project.properties to the repository root (see docs/devops/security-scanning.md).
+  # ---------------------------------------------------------------------------
+  sonarqube:
+    name: Code Quality — SonarQube
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Skip entirely if the required secret is not configured.
+    if: >
+      vars.SONAR_ENABLED == 'true' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository with full history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Run SonarQube Cloud analysis
+        uses: SonarSource/sonarqube-scan-action@884b79409bbd464b2a59edc326a4b77dc56b2195 # v4.2.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+

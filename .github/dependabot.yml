@@ -1,0 +1,80 @@
+# =============================================================================
+# MOSS & MARROW — Dependabot Configuration
+# =============================================================================
+# Automates security patch pull requests for npm packages and GitHub Actions.
+# Weekly schedule to avoid PR queue build-up.
+# =============================================================================
+
+version: 2
+
+updates:
+  # Frontend npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "frontend"
+    commit-message:
+      prefix: "chore(deps)"
+    # Automatically group minor and patch updates to reduce PR noise.
+    groups:
+      react-ecosystem:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "react-router-dom"
+          - "@vitejs/*"
+          - "vite"
+      ui-libraries:
+        patterns:
+          - "lucide-react"
+
+  # Backend npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "backend"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      express-ecosystem:
+        patterns:
+          - "express"
+          - "cors"
+          - "helmet"
+          - "morgan"
+      database:
+        patterns:
+          - "mongoose"
+      validation:
+        patterns:
+          - "zod"
+
+  # GitHub Actions workflow dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "08:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(actions)"
+
