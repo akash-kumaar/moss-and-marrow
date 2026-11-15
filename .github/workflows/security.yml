@@ -147,7 +147,7 @@ jobs:
         with:
           scan-type: "fs"
           scan-ref: ${{ matrix.path }}
-          format: "sarif"
+          format: "table"
           output: "trivy-${{ matrix.app }}-fs.sarif"
           severity: "CRITICAL,HIGH"
           exit-code: "1"
@@ -215,7 +215,7 @@ jobs:
         with:
           scan-type: "image"
           image-ref: moss-marrow-scan/${{ matrix.app }}:${{ github.sha }}
-          format: "sarif"
+          format: "table"
           output: "trivy-${{ matrix.app }}-image.sarif"
           severity: "CRITICAL,HIGH"
           exit-code: "1"
