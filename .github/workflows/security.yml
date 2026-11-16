@@ -159,6 +159,9 @@ jobs:
           format: "sarif"
           output: "trivy-${{ matrix.app }}-fs.sarif"
           severity: "CRITICAL,HIGH"
+          # By default trivy-action writes all severities to SARIF. Limit the
+          # blocking SARIF scan to the same threshold as the table scan.
+          limit-severities-for-sarif: true
           exit-code: "1"
           ignore-unfixed: true
 
@@ -236,6 +239,9 @@ jobs:
           format: "sarif"
           output: "trivy-${{ matrix.app }}-image.sarif"
           severity: "CRITICAL,HIGH"
+          # By default trivy-action writes all severities to SARIF. Limit the
+          # blocking SARIF scan to the same threshold as the table scan.
+          limit-severities-for-sarif: true
           exit-code: "1"
           ignore-unfixed: true
 
