@@ -85,25 +85,37 @@ jobs:
       # STATUS: Configured — awaiting AWS IAM OIDC provider and role setup.
       # See docs/devops/aws-oidc-setup.md for required AWS configuration.
       # ------------------------------------------------------------------------
+      
+      # ------------------------------------------------------------------------
+      # Debug GitHub OIDC Identity
+      # ------------------------------------------------------------------------
+      - name: Debug GitHub OIDC identity
+        run: |
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Ref: $GITHUB_REF"
+          echo "Event: $GITHUB_EVENT_NAME"
+          echo "Actor: $GITHUB_ACTOR"
+
+      # ------------------------------------------------------------------------
+      # AWS OIDC Authentication
+      # ------------------------------------------------------------------------
       - name: Configure AWS credentials (OIDC)
         id: aws-auth
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
         with:
           role-to-assume: ${{ secrets.AWS_ECR_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
-          # This action exchanges the GitHub OIDC token for temporary AWS credentials.
-          # No permanent access keys are stored or used.
-        # Allow build to continue for SBOM/provenance even without AWS
 
       - name: Log AWS authentication result
+        if: always()
         run: |
           if [ "${{ steps.aws-auth.outcome }}" = "success" ]; then
-            echo "✅ AWS OIDC authentication succeeded."
+            echo "AWS OIDC authentication succeeded."
           else
-            echo "⚠️  AWS OIDC authentication was skipped or failed."
-            echo "    ECR push will be disabled. Set required secrets to enable."
-            echo "    See docs/devops/aws-oidc-setup.md"
+            echo "AWS OIDC authentication failed."
           fi
+
+          
 
       - name: Log in to Amazon ECR
         id: ecr-login
