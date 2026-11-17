@@ -93,7 +93,7 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
           # This action exchanges the GitHub OIDC token for temporary AWS credentials.
           # No permanent access keys are stored or used.
-        continue-on-error: true  # Allow build to continue for SBOM/provenance even without AWS
+        # Allow build to continue for SBOM/provenance even without AWS
 
       - name: Log AWS authentication result
         run: |
