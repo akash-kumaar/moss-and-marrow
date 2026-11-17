@@ -96,6 +96,68 @@ jobs:
           echo "Event: $GITHUB_EVENT_NAME"
           echo "Actor: $GITHUB_ACTOR"
 
+      - name: Inspect GitHub OIDC claims safely
+        run: |
+          node <<'NODE'
+          async function main() {
+            const requestUrl = process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
+            const requestToken = process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN;
+
+            if (!requestUrl || !requestToken) {
+              throw new Error("GitHub OIDC environment variables are missing.");
+            }
+
+            const url = new URL(requestUrl);
+            url.searchParams.set("audience", "sts.amazonaws.com");
+
+            const response = await fetch(url, {
+              headers: {
+                Authorization: `Bearer ${requestToken}`
+              }
+            });
+
+            if (!response.ok) {
+              throw new Error(`OIDC request failed: HTTP ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (!result.value) {
+              throw new Error("GitHub did not return an OIDC token.");
+            }
+
+            const parts = result.value.split(".");
+            if (parts.length !== 3) {
+              throw new Error("Invalid JWT format.");
+            }
+
+            const payload = JSON.parse(
+              Buffer.from(parts[1], "base64url").toString("utf8")
+            );
+
+            for (const key of [
+              "iss",
+              "sub",
+              "aud",
+              "repository",
+              "repository_id",
+              "repository_owner",
+              "repository_owner_id",
+              "ref",
+              "event_name"
+            ]) {
+              if (payload[key] !== undefined) {
+                console.log(`${key}: ${JSON.stringify(payload[key])}`);
+              }
+            }
+          }
+
+          main().catch(error => {
+            console.error(error.message);
+            process.exit(1);
+          });
+          NODE
+
       # ------------------------------------------------------------------------
       # AWS OIDC Authentication
       # ------------------------------------------------------------------------
