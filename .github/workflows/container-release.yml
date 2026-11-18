@@ -65,6 +65,7 @@ jobs:
     permissions:
       contents: read
       id-token: write   # Required for AWS OIDC and Cosign keyless signing
+      attestations: write  # Required to persist provenance attestations
       packages: write   # Required for GHA cache layer access
 
     outputs:
@@ -184,6 +185,23 @@ jobs:
         if: steps.aws-auth.outcome == 'success'
         uses: aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076 # v2.0.1
 
+      - name: Validate ECR release inputs
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY_FRONTEND: ${{ vars.ECR_REPOSITORY_FRONTEND }}
+          ECR_REPOSITORY_BACKEND: ${{ vars.ECR_REPOSITORY_BACKEND }}
+        run: |
+          missing=""
+          [ -z "$ECR_REGISTRY" ] && missing="${missing}\n  - ECR login registry output"
+          [ -z "$ECR_REPOSITORY_FRONTEND" ] && missing="${missing}\n  - vars.ECR_REPOSITORY_FRONTEND"
+          [ -z "$ECR_REPOSITORY_BACKEND" ] && missing="${missing}\n  - vars.ECR_REPOSITORY_BACKEND"
+
+          if [ -n "$missing" ]; then
+            echo "ECR release configuration is incomplete:"
+            echo -e "$missing"
+            exit 1
+          fi
+
       # ------------------------------------------------------------------------
       # Frontend Image — Build and Push
       # ------------------------------------------------------------------------
@@ -193,10 +211,8 @@ jobs:
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
-          push: ${{ steps.aws-auth.outcome == 'success' }}
-          load: ${{ steps.aws-auth.outcome != 'success' }}
-          tags: |
-            ${{ steps.ecr-login.outputs.registry && format('{0}/{1}:{2}', steps.ecr-login.outputs.registry, vars.ECR_REPOSITORY_FRONTEND, github.sha) || format('moss-marrow/frontend:{0}', github.sha) }}
+          push: true
+          tags: ${{ steps.ecr-login.outputs.registry }}/${{ vars.ECR_REPOSITORY_FRONTEND }}:${{ github.sha }}
           build-args: VITE_API_URL=/api/v1
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend
@@ -218,10 +234,8 @@ jobs:
         with:
           context: ./backend
           file: ./backend/Dockerfile
-          push: ${{ steps.aws-auth.outcome == 'success' }}
-          load: ${{ steps.aws-auth.outcome != 'success' }}
-          tags: |
-            ${{ steps.ecr-login.outputs.registry && format('{0}/{1}:{2}', steps.ecr-login.outputs.registry, vars.ECR_REPOSITORY_BACKEND, github.sha) || format('moss-marrow/backend:{0}', github.sha) }}
+          push: true
+          tags: ${{ steps.ecr-login.outputs.registry }}/${{ vars.ECR_REPOSITORY_BACKEND }}:${{ github.sha }}
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
           provenance: true
@@ -243,20 +257,22 @@ jobs:
       - name: Generate SBOM — frontend image
         uses: anchore/sbom-action@61119d458adab75f756bc0b9e4bde25725f86a7a # v0.17.2
         with:
-          image: moss-marrow/frontend:${{ github.sha }}
+          image: ${{ steps.ecr-login.outputs.registry }}/${{ vars.ECR_REPOSITORY_FRONTEND }}:${{ github.sha }}
           artifact-name: sbom-frontend-${{ github.sha }}.spdx.json
           output-file: sbom-frontend.spdx.json
           format: spdx-json
-        continue-on-error: true  # SBOM generation is non-blocking; image may not be locally loaded when pushed
+          # Upload both generated files together in the dedicated step below.
+          upload-artifact: false
 
       - name: Generate SBOM — backend image
         uses: anchore/sbom-action@61119d458adab75f756bc0b9e4bde25725f86a7a # v0.17.2
         with:
-          image: moss-marrow/backend:${{ github.sha }}
+          image: ${{ steps.ecr-login.outputs.registry }}/${{ vars.ECR_REPOSITORY_BACKEND }}:${{ github.sha }}
           artifact-name: sbom-backend-${{ github.sha }}.spdx.json
           output-file: sbom-backend.spdx.json
           format: spdx-json
-        continue-on-error: true
+          # Upload both generated files together in the dedicated step below.
+          upload-artifact: false
 
       - name: Upload SBOM artifacts
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
