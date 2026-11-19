@@ -1,0 +1,23 @@
+#cloud-config
+package_update: true
+
+write_files:
+  - path: /opt/deploy.sh
+    owner: root:root
+    permissions: '0700'
+    content: |
+      ${indent(6, deploy_script)}
+
+runcmd:
+  # Install and start Docker Engine on Amazon Linux 2023
+  - dnf install -y docker
+  - systemctl enable --now docker
+  - usermod -aG docker ec2-user
+
+  # Install Docker Compose v2 plugin
+  - mkdir -p /usr/local/lib/docker/cli-plugins
+  - curl -SL "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64" -o /usr/local/lib/docker/cli-plugins/docker-compose
+  - chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+
+  # Verify AWS CLI v2 is present and enable SSM Agent
+  - systemctl enable --now amazon-ssm-agent

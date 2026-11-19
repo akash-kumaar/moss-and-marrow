@@ -1,3 +1,10 @@
+# =============================================================================
+# Frontend Service — MOSS & MARROW
+# =============================================================================
+# Exposes the frontend Nginx reverse proxy to the internet via an AWS Load Balancer.
+# Traffic Flow: User -> AWS ELB (Port 80) -> Nginx Pod (Port 80) -> Express API (Port 5000)
+# =============================================================================
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -6,10 +13,10 @@ metadata:
   labels:
     app.kubernetes.io/name: moss-marrow
     app.kubernetes.io/component: frontend
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
 spec:
-  # LoadBalancer exposes the frontend to the internet via an AWS ELB.
-  # For cost savings during development, use ClusterIP and port-forward instead.
-  # To switch: change type to ClusterIP and remove the port: 80 line.
   type: LoadBalancer
   selector:
     app.kubernetes.io/name: moss-marrow
@@ -19,4 +26,3 @@ spec:
       port: 80
       targetPort: 80
       protocol: TCP
-

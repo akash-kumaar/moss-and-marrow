@@ -1,0 +1,1109 @@
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+  ~ update in-place
+  - destroy
+
+Terraform will perform the following actions:
+
+  # aws_eip.nat[0] will be destroyed
+  # (because index [0] is out of range for count)
+  - resource "aws_eip" "nat" {
+      - allocation_id            = "eipalloc-042a4ce6d44385c0c" -> null
+      - arn                      = "arn:aws:ec2:ap-south-1:874940900689:elastic-ip/eipalloc-042a4ce6d44385c0c" -> null
+      - association_id           = "eipassoc-06b5d335f887fb9bf" -> null
+      - domain                   = "vpc" -> null
+      - id                       = "eipalloc-042a4ce6d44385c0c" -> null
+      - network_border_group     = "ap-south-1" -> null
+      - network_interface        = "eni-060f6f154db1e560f" -> null
+      - private_dns              = "ip-10-0-1-71.ap-south-1.compute.internal" -> null
+      - private_ip               = "10.0.1.71" -> null
+      - public_dns               = "ec2-3-111-12-27.ap-south-1.compute.amazonaws.com" -> null
+      - public_ip                = "3.111.12.27" -> null
+      - public_ipv4_pool         = "amazon" -> null
+      - region                   = "ap-south-1" -> null
+      - tags                     = {
+          - "Name" = "moss-marrow-nat-eip"
+        } -> null
+      - tags_all                 = {
+          - "Environment" = "Infrastructure"
+          - "ManagedBy"   = "Terraform"
+          - "Name"        = "moss-marrow-nat-eip"
+          - "Project"     = "MOSS-MARROW"
+        } -> null
+        # (6 unchanged attributes hidden)
+    }
+
+  # aws_eks_access_entry.github_ecr_publisher will be destroyed
+  # (because aws_eks_access_entry.github_ecr_publisher is not in configuration)
+  - resource "aws_eks_access_entry" "github_ecr_publisher" {
+      - access_entry_arn  = "arn:aws:eks:ap-south-1:874940900689:access-entry/moss-marrow-cluster/role/874940900689/moss-marrow-github-ecr-publisher/58d0f831-9007-12d9-3092-afae3ccec628" -> null
+      - cluster_name      = "moss-marrow-cluster" -> null
+      - created_at        = "2026-11-18T20:39:50Z" -> null
+      - id                = "moss-marrow-cluster:arn:aws:iam::874940900689:role/moss-marrow-github-ecr-publisher" -> null
+      - kubernetes_groups = [] -> null
+      - modified_at       = "2026-11-18T20:39:50Z" -> null
+      - principal_arn     = "arn:aws:iam::874940900689:role/moss-marrow-github-ecr-publisher" -> null
+      - region            = "ap-south-1" -> null
+      - tags              = {} -> null
+      - tags_all          = {
+          - "Environment" = "Infrastructure"
+          - "ManagedBy"   = "Terraform"
+          - "Project"     = "MOSS-MARROW"
+        } -> null
+      - type              = "STANDARD" -> null
+      - user_name         = "arn:aws:sts::874940900689:assumed-role/moss-marrow-github-ecr-publisher/{{SessionName}}" -> null
+    }
+
+  # aws_eks_access_entry.github_eks_deployer will be destroyed
+  # (because aws_eks_access_entry.github_eks_deployer is not in configuration)
+  - resource "aws_eks_access_entry" "github_eks_deployer" {
+      - access_entry_arn  = "arn:aws:eks:ap-south-1:874940900689:access-entry/moss-marrow-cluster/role/874940900689/moss-marrow-github-eks-deployer/26d0f831-9002-a04c-7e10-4517bfa98e3e" -> null
+      - cluster_name      = "moss-marrow-cluster" -> null
+      - created_at        = "2026-11-18T20:39:50Z" -> null
+      - id                = "moss-marrow-cluster:arn:aws:iam::874940900689:role/moss-marrow-github-eks-deployer" -> null
+      - kubernetes_groups = [] -> null
+      - modified_at       = "2026-11-18T20:39:50Z" -> null
+      - principal_arn     = "arn:aws:iam::874940900689:role/moss-marrow-github-eks-deployer" -> null
+      - region            = "ap-south-1" -> null
+      - tags              = {} -> null
+      - tags_all          = {
+          - "Environment" = "Infrastructure"
+          - "ManagedBy"   = "Terraform"
+          - "Project"     = "MOSS-MARROW"
+        } -> null
+      - type              = "STANDARD" -> null
+      - user_name         = "arn:aws:sts::874940900689:assumed-role/moss-marrow-github-eks-deployer/{{SessionName}}" -> null
+    }
+
+  # aws_eks_cluster.main will be destroyed
+  # (because aws_eks_cluster.main is not in configuration)
+  - resource "aws_eks_cluster" "main" {
+      - arn                           = "arn:aws:eks:ap-south-1:874940900689:cluster/moss-marrow-cluster" -> null
+      - bootstrap_self_managed_addons = true -> null
+      - certificate_authority         = [
+          - {
+              - data = "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURNakNDQWhxZ0F3SUJBZ0lSQUlwdjJuUTI0eVFEcFpxaXBFVkFZcEF3RFFZSktvWklodmNOQVFFTEJRQXcKSnpFUU1BNEdBMVVFQ2hNSFFWZFRJRVZMVXpFVE1CRUdBMVVFQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TmpFeApNVGd5TURNeU1EWmFGdzB6TVRFeE1UY3lNRE15TURaYU1DY3hFREFPQmdOVkJBb1RCMEZYVXlCRlMxTXhFekFSCkJnTlZCQU1UQ210MVltVnlibVYwWlhNd2dnRWlNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0SUJEd0F3Z2dFS0FvSUIKQVFDaUNvQWh2bVhsMFhpOTdERDBEVU1EZ2l6MFFhY09yNEdYelI1dWZUQW80KzM3cG53TUVUU3J1L2RBMHAvegpnN0poUlQ3c0ZPcE91ZWVtYUJzWGhqQTVERHU3UmsyZ21VeUYzaDB4RUNpV29tNTU5VHpGV0p6cnBZZ3ArZS9RCjZjSEhuaURwR3A2SHdVOWFZSkwwYkpSWHVQbDFwQ2JyRWxacmxpKzRHNCsxdzQ2MUJrM2RVS01NQ2wxNi9ObUgKVzU4OXFRWWYwaDhCMy9ML1RTNlFaYk5FdmovUWhUaHNFTjVUVUhsSjRnUUNBbFowb3dwMkprVW9Zc05pc0pHeQptNFRXVlp4RFdjTjE3K01yUTZlNjBtNHZWZHAydDZ0MGVsMjZjSjdTZ3gyYlpuVFdIN2kydlVuN1lCNi9TWkVyCi9FOEYxYjZDK2pGTFphQS81bk1UV3l5SkFnTUJBQUdqV1RCWE1BNEdBMVVkRHdFQi93UUVBd0lDcERBUEJnTlYKSFJNQkFmOEVCVEFEQVFIL01CMEdBMVVkRGdRV0JCVHZ4SmNCOXFTbC9FSmVUVGZpRzYzQ1JFNDNKVEFWQmdOVgpIUkVFRGpBTWdncHJkV0psY201bGRHVnpNQTBHQ1NxR1NJYjNEUUVCQ3dVQUE0SUJBUUJZaHM2NlRTTUlWVFZWCnl3UlFjYWxmRnBTL1hKeTZvcjdjOTBxWXE1ekxkT0VQQzVLTGxkVWFOcnBDcWN1L3htSzRZYVo3MjAzd20yUFYKaWN1REU4UFdnSHJ2c1RmcEdPTUxjaHZHN3loZzZQZXRhaW9aY1AwaDRvaE5OQ2x6c2dUVXRDVGpmL0JEQTFjNgpEVmRWY2YyU0NFN28rUUd5WjgydENMdVR3aG96TWhINy9GZk15WXREYW1HdWEwa3k2YWJwUUVWemU2cE1wYUg0ClA2L01RTDhqTEZMSksxU2R4SWhXQU9lcEdYS0FDQm81cmwyRkRCcHlkdEVDVzZPb2Q5blhoKzI1Sm9VZW56dFYKTUo1ZElOclZKQnRSeXhjdXdJeCtIU2QxbjJJSmtJVXZNZ3ZDMGpUempQdXZLZ0J2SWl4UU1RQ0R5TzZhZ1BmVApYVnAvN29YZwotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg=="
+            },
+        ] -> null
+      - created_at                    = "2026-11-18T20:31:44Z" -> null
+      - deletion_protection           = false -> null
+      - enabled_cluster_log_types     = [] -> null
+      - endpoint                      = "https://62E8A3FDBDDBF545C36462AF582C31B1.gr7.ap-south-1.eks.amazonaws.com" -> null
+      - id                            = "moss-marrow-cluster" -> null
+      - identity                      = [
+          - {
+              - oidc = [
+                  - {
+                      - issuer = "https://oidc.eks.ap-south-1.amazonaws.com/id/62E8A3FDBDDBF545C36462AF582C31B1"
+                    },
+                ]
+            },
+        ] -> null
+      - name                          = "moss-marrow-cluster" -> null
+      - platform_version              = "eks.76" -> null
+      - region                        = "ap-south-1" -> null
+      - role_arn                      = "arn:aws:iam::874940900689:role/moss-marrow-eks-cluster-role" -> null
+      - status                        = "ACTIVE" -> null
+      - tags                          = {
+          - "Name" = "moss-marrow-cluster"
+        } -> null
+      - tags_all                      = {
+          - "Environment" = "Infrastructure"
+          - "ManagedBy"   = "Terraform"
+          - "Name"        = "moss-marrow-cluster"
+          - "Project"     = "MOSS-MARROW"
+        } -> null
+      - version                       = "1.31" -> null
+
+      - access_config {
+          - authentication_mode                         = "API_AND_CONFIG_MAP" -> null
+          - bootstrap_cluster_creator_admin_permissions = true -> null
+        }
+
+      - compute_config {
+          - enabled       = false -> null
+          - node_pools    = [] -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - control_plane_scaling_config {
+          - tier = "standard" -> null
+        }
+
+      - kube_api_server_config {
+          - event_ttl = "60m" -> null
+
+          - service_node_port_range {
+              - max_port = 32767 -> null
+              - min_port = 30000 -> null
+            }
+        }
+
+      - kube_controller_manager_config {
+          - horizontal_pod_autoscaler_controller_config {
+              - horizontal_pod_autoscaler_sync_period = "15s" -> null
+            }
+          - pod_gc_controller_config {
+              - terminated_pod_gc_threshold = 12500 -> null
+            }
+        }
+
+      - kube_scheduler_config {
+          - node_resources_fit {
+              - scoring_strategy {
+                  - type = "LeastAllocated" -> null
+
+                  - resource {
+                      - name   = "cpu" -> null
+                      - weight = 1 -> null
+                    }
+                  - resource {
+                      - name   = "memory" -> null
+                      - weight = 1 -> null
+                    }
+                }
+            }
+        }
+
+      - kubernetes_network_config {
+          - ip_family         = "ipv4" -> null
+          - service_ipv4_cidr = "172.20.0.0/16" -> null
+            # (1 unchanged attribute hidden)
+
+          - elastic_load_balancing {
+              - enabled = false -> null
+            }
+        }
+
+      - storage_config {
+          - block_storage {
+              - enabled = false -> null
+            }
+        }
+
+      - upgrade_policy {
+          - support_type = "EXTENDED" -> null
+        }
+
+      - vpc_config {
+          - cluster_security_group_id = "sg-02a9671e2fd9b608e" -> null
+          - control_plane_egress_mode = "AWS_MANAGED" -> null
+          - endpoint_private_access   = true -> null
+          - endpoint_public_access    = true -> null
+          - public_access_cidrs       = [
+              - "0.0.0.0/0",
+            ] -> null
+          - security_group_ids        = [] -> null
+          - subnet_ids                = [
+              - "subnet-00dc2ec16dbf6c4af",
+              - "subnet-029501a633d268089",
+              - "subnet-05307b51a0a570db9",
+              - "subnet-0f47a5461323eec6f",
+            ] -> null
+          - vpc_id                    = "vpc-056abcc0d656c5d71" -> null
+        }
+    }
+
+  # aws_eks_node_group.main will be destroyed
+  # (because aws_eks_node_group.main is not in configuration)
+  - resource "aws_eks_node_group" "main" {
+      - ami_type               = "AL2023_x86_64_STANDARD" -> null
+      - arn                    = "arn:aws:eks:ap-south-1:874940900689:nodegroup/moss-marrow-cluster/moss-marrow-workers/78d0f831-900c-529a-4331-9b3b0856c88c" -> null
+      - capacity_type          = "ON_DEMAND" -> null
+      - cluster_name           = "moss-marrow-cluster" -> null
+      - disk_size              = 20 -> null
+      - id                     = "moss-marrow-cluster:moss-marrow-workers" -> null
+      - instance_types         = [
+          - "t3.medium",
+        ] -> null
+      - labels                 = {
+          - "role" = "general"
+        } -> null
+      - node_group_name        = "moss-marrow-workers" -> null
+      - node_role_arn          = "arn:aws:iam::874940900689:role/moss-marrow-eks-nodes-role" -> null
+      - region                 = "ap-south-1" -> null
+      - release_version        = "1.31.14-20261112" -> null
+      - resources              = [
+          - {
+              - autoscaling_groups              = [
+                  - {
+                      - name = "eks-moss-marrow-workers-78d0f831-900c-529a-4331-9b3b0856c88c"
+                    },
+                ]
+                # (1 unchanged attribute hidden)
+            },
+        ] -> null
+      - status                 = "CREATE_FAILED" -> null
+      - subnet_ids             = [
+          - "subnet-029501a633d268089",
+          - "subnet-05307b51a0a570db9",
+        ] -> null
+      - tags                   = {
+          - "Name" = "moss-marrow-worker-node"
+        } -> null
+      - tags_all               = {
+          - "Environment" = "Infrastructure"
+          - "ManagedBy"   = "Terraform"
+          - "Name"        = "moss-marrow-worker-node"
+          - "Project"     = "MOSS-MARROW"
+        } -> null
+      - version                = "1.31" -> null
+        # (1 unchanged attribute hidden)
+
+      - scaling_config {
+          - desired_size = 2 -> null
+          - max_size     = 3 -> null
+          - min_size     = 1 -> null
+        }
+
+      - update_config {
+          - max_unavailable            = 1 -> null
+          - max_unavailable_percentage = 0 -> null
+            # (1 unchanged attribute hidden)
+        }
+    }
+
+  # aws_iam_instance_profile.ec2 will be created
+  + resource "aws_iam_instance_profile" "ec2" {
+      + arn         = (known after apply)
+      + create_date = (known after apply)
+      + id          = (known after apply)
+      + name        = "moss-marrow-ec2-instance-profile"
+      + name_prefix = (known after apply)
+      + path        = "/"
+      + role        = "moss-marrow-ec2-instance-role"
+      + tags        = {
+          + "Component" = "EC2"
+        }
+      + tags_all    = {
+          + "Component"   = "EC2"
+          + "Environment" = "Infrastructure"
+          + "ManagedBy"   = "Terraform"
+          + "Project"     = "MOSS-MARROW"
+        }
+      + unique_id   = (known after apply)
+    }
+
+  # aws_iam_role.ec2_instance will be created
+  + resource "aws_iam_role" "ec2_instance" {
+      + arn                   = (known after apply)
+      + assume_role_policy    = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = "sts:AssumeRole"
+                      + Effect    = "Allow"
+                      + Principal = {
+                          + Service = "ec2.amazonaws.com"
+                        }
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + create_date           = (known after apply)
+      + force_detach_policies = false
+      + id                    = (known after apply)
+      + managed_policy_arns   = (known after apply)
+      + max_session_duration  = 3600
+      + name                  = "moss-marrow-ec2-instance-role"
+      + name_prefix           = (known after apply)
+      + path                  = "/"
+      + tags                  = {
+          + "Component" = "EC2"
+        }
+      + tags_all              = {
+          + "Component"   = "EC2"
+          + "Environment" = "Infrastructure"
+          + "ManagedBy"   = "Terraform"
+          + "Project"     = "MOSS-MARROW"
+        }
+      + unique_id             = (known after apply)
+
+      + inline_policy (known after apply)
+    }
+
+  # aws_iam_role.eks_cluster will be destroyed
+  # (because aws_iam_role.eks_cluster is not in configuration)
+  - resource "aws_iam_role" "eks_cluster" {
+      - arn                   = "arn:aws:iam::874940900689:role/moss-marrow-eks-cluster-role" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRole"
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - Service = "eks.amazonaws.com"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-11-18T20:31:28Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "moss-marrow-eks-cluster-role" -> null
+      - managed_policy_arns   = [
+          - "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+        ] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "moss-marrow-eks-cluster-role" -> null
+      - path                  = "/" -> null
+      - tags                  = {
+          - "Component" = "EKS"
+        } -> null
+      - tags_all              = {
+          - "Component"   = "EKS"
+          - "Environment" = "Infrastructure"
+          - "ManagedBy"   = "Terraform"
+          - "Project"     = "MOSS-MARROW"
+        } -> null
+      - unique_id             = "AROA4XNUKUVI5DTV7J4HI" -> null
+        # (3 unchanged attributes hidden)
+    }
+
+  # aws_iam_role.eks_nodes will be destroyed
+  # (because aws_iam_role.eks_nodes is not in configuration)
+  - resource "aws_iam_role" "eks_nodes" {
+      - arn                   = "arn:aws:iam::874940900689:role/moss-marrow-eks-nodes-role" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRole"
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - Service = "ec2.amazonaws.com"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-11-18T20:31:28Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "moss-marrow-eks-nodes-role" -> null
+      - managed_policy_arns   = [
+          - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+          - "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+          - "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+        ] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "moss-marrow-eks-nodes-role" -> null
+      - path                  = "/" -> null
+      - tags                  = {
+          - "Component" = "EKS"
+        } -> null
+      - tags_all              = {
+          - "Component"   = "EKS"
+          - "Environment" = "Infrastructure"
+          - "ManagedBy"   = "Terraform"
+          - "Project"     = "MOSS-MARROW"
+        } -> null
+      - unique_id             = "AROA4XNUKUVIRH4ZFOFPV" -> null
+        # (3 unchanged attributes hidden)
+    }
+
+  # aws_iam_role.github_ec2_deployer will be created
+  + resource "aws_iam_role" "github_ec2_deployer" {
+      + arn                   = (known after apply)
+      + assume_role_policy    = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = "sts:AssumeRoleWithWebIdentity"
+                      + Condition = {
+                          + StringEquals = {
+                              + "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+                              + "token.actions.githubusercontent.com:sub" = ":akash-kumaar@217486588/moss-and-marrow@1458106685:ref:refs/heads/main"
+                            }
+                        }
+                      + Effect    = "Allow"
+                      + Principal = {
+                          + Federated = "arn:aws:iam::874940900689:oidc-provider/token.actions.githubusercontent.com"
+                        }
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + create_date           = (known after apply)
+      + force_detach_policies = false
+      + id                    = (known after apply)
+      + managed_policy_arns   = (known after apply)
+      + max_session_duration  = 3600
+      + name                  = "moss-marrow-github-ec2-deployer"
+      + name_prefix           = (known after apply)
+      + path                  = "/"
+      + tags                  = {
+          + "Component" = "GitHub-Actions"
+        }
+      + tags_all              = {
+          + "Component"   = "GitHub-Actions"
+          + "Environment" = "Infrastructure"
+          + "ManagedBy"   = "Terraform"
+          + "Project"     = "MOSS-MARROW"
+        }
+      + unique_id             = (known after apply)
+
+      + inline_policy (known after apply)
+    }
+
+  # aws_iam_role.github_ecr_publisher will be updated in-place
+  ~ resource "aws_iam_role" "github_ecr_publisher" {
+      ~ assume_role_policy    = jsonencode(
+          ~ {
+              ~ Statement = [
+                  ~ {
+                      ~ Condition = {
+                          ~ StringEquals = {
+                              ~ "token.actions.githubusercontent.com:sub" = "repo:akash-kumaar@217486588/moss-and-marrow@1458106685:ref:refs/heads/main" -> ":akash-kumaar@217486588/moss-and-marrow@1458106685:ref:refs/heads/main"
+                                # (1 unchanged attribute hidden)
+                            }
+                        }
+                        # (3 unchanged attributes hidden)
+                    },
+                ]
+                # (1 unchanged attribute hidden)
+            }
+        )
+        id                    = "moss-marrow-github-ecr-publisher"
+        name                  = "moss-marrow-github-ecr-publisher"
+        tags                  = {
+            "Component" = "GitHub-Actions"
+        }
+        # (11 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # aws_iam_role.github_eks_deployer will be destroyed
+  # (because aws_iam_role.github_eks_deployer is not in configuration)
+  - resource "aws_iam_role" "github_eks_deployer" {
+      - arn                   = "arn:aws:iam::874940900689:role/moss-marrow-github-eks-deployer" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRoleWithWebIdentity"
+                      - Condition = {
+                          - StringEquals = {
+                              - "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+                              - "token.actions.githubusercontent.com:sub" = "repo:akash-kumaar@217486588/moss-and-marrow@1458106685:ref:refs/heads/main"
+                            }
+                        }
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - Federated = "arn:aws:iam::874940900689:oidc-provider/token.actions.githubusercontent.com"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-11-18T20:31:28Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "moss-marrow-github-eks-deployer" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "moss-marrow-github-eks-deployer" -> null
+      - path                  = "/" -> null
+      - tags                  = {
+          - "Component" = "GitHub-Actions"
+        } -> null
+      - tags_all              = {
+          - "Component"   = "GitHub-Actions"
+          - "Environment" = "Infrastructure"
+          - "ManagedBy"   = "Terraform"
+          - "Project"     = "MOSS-MARROW"
+        } -> null
+      - unique_id             = "AROA4XNUKUVIRRADMPE7K" -> null
+        # (3 unchanged attributes hidden)
+
+      - inline_policy {
+          - name   = "moss-marrow-eks-deploy-policy" -> null
+          - policy = jsonencode(
+                {
+                  - Statement = [
+                      - {
+                          - Action   = [
+                              - "ecr:GetAuthorizationToken",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "*"
+                          - Sid      = "ECRAuthentication"
+                        },
+                      - {
+                          - Action   = [
+                              - "ecr:BatchCheckLayerAvailability",
+                              - "ecr:BatchGetImage",
+                              - "ecr:GetDownloadUrlForLayer",
+                              - "ecr:DescribeImages",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = [
+                              - "arn:aws:ecr:ap-south-1:874940900689:repository/moss-marrow/frontend",
+                              - "arn:aws:ecr:ap-south-1:874940900689:repository/moss-marrow/backend",
+                            ]
+                          - Sid      = "ECRReadImages"
+                        },
+                      - {
+                          - Action   = [
+                              - "eks:DescribeCluster",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:eks:ap-south-1:874940900689:cluster/moss-marrow-cluster"
+                          - Sid      = "EKSClusterDescribe"
+                        },
+                    ]
+                  - Version   = "2012-10-17"
+                }
+            ) -> null
+        }
+    }
+
+  # aws_iam_role_policy.ec2_ecr_pull will be created
+  + resource "aws_iam_role_policy" "ec2_ecr_pull" {
+      + id          = (known after apply)
+      + name        = "moss-marrow-ec2-ecr-pull"
+      + name_prefix = (known after apply)
+      + policy      = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action   = [
+                          + "ecr:GetAuthorizationToken",
+                        ]
+                      + Effect   = "Allow"
+                      + Resource = "*"
+                      + Sid      = "ECRAuth"
+                    },
+                  + {
+                      + Action   = [
+                          + "ecr:BatchCheckLayerAvailability",
+                          + "ecr:BatchGetImage",
+                          + "ecr:GetDownloadUrlForLayer",
+                        ]
+                      + Effect   = "Allow"
+                      + Resource = [
+                          + "arn:aws:ecr:ap-south-1:874940900689:repository/moss-marrow/frontend",
+                          + "arn:aws:ecr:ap-south-1:874940900689:repository/moss-marrow/backend",
+                        ]
+                      + Sid      = "PullImages"
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + role        = (known after apply)
+    }
+
+  # aws_iam_role_policy.ec2_secrets_read will be created
+  + resource "aws_iam_role_policy" "ec2_secrets_read" {
+      + id          = (known after apply)
+      + name        = "moss-marrow-ec2-secrets-read"
+      + name_prefix = (known after apply)
+      + policy      = (known after apply)
+      + role        = (known after apply)
+    }
+
+  # aws_iam_role_policy.github_ec2_deploy will be created
+  + resource "aws_iam_role_policy" "github_ec2_deploy" {
+      + id          = (known after apply)
+      + name        = "moss-marrow-ec2-deploy-policy"
+      + name_prefix = (known after apply)
+      + policy      = (known after apply)
+      + role        = (known after apply)
+    }
+
+  # aws_iam_role_policy.github_ecr_push will be updated in-place
+  ~ resource "aws_iam_role_policy" "github_ecr_push" {
+        id          = "moss-marrow-github-ecr-publisher:moss-marrow-ecr-push"
+        name        = "moss-marrow-ecr-push"
+      ~ policy      = jsonencode(
+          ~ {
+              ~ Statement = [
+                    # (1 unchanged element hidden)
+                    {
+                        Action   = [
+                            "ecr:BatchCheckLayerAvailability",
+                            "ecr:BatchGetImage",
+                            "ecr:InitiateLayerUpload",
+                            "ecr:UploadLayerPart",
+                            "ecr:CompleteLayerUpload",
+                            "ecr:GetDownloadUrlForLayer",
+                            "ecr:PutImage",
+                        ]
+                        Effect   = "Allow"
+                        Resource = [
+                            "arn:aws:ecr:ap-south-1:874940900689:repository/moss-marrow/frontend",
+                            "arn:aws:ecr:ap-south-1:874940900689:repository/moss-marrow/backend",
+                        ]
+                        Sid      = "PushImages"
+                    },
+                  - {
+                      - Action   = [
+                          - "eks:DescribeCluster",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:eks:ap-south-1:874940900689:cluster/moss-marrow-cluster"
+                      - Sid      = "EKSDescribeForDeployment"
+                    },
+                ]
+                # (1 unchanged attribute hidden)
+            }
+        )
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_iam_role_policy.github_eks_deploy will be destroyed
+  # (because aws_iam_role_policy.github_eks_deploy is not in configuration)
+  - resource "aws_iam_role_policy" "github_eks_deploy" {
+      - id          = "moss-marrow-github-eks-deployer:moss-marrow-eks-deploy-policy" -> null
+      - name        = "moss-marrow-eks-deploy-policy" -> null
+      - policy      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action   = [
+                          - "ecr:GetAuthorizationToken",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "*"
+                      - Sid      = "ECRAuthentication"
+                    },
+                  - {
+                      - Action   = [
+                          - "ecr:BatchCheckLayerAvailability",
+                          - "ecr:BatchGetImage",
+                          - "ecr:GetDownloadUrlForLayer",
+                          - "ecr:DescribeImages",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = [
+                          - "arn:aws:ecr:ap-south-1:874940900689:repository/moss-marrow/frontend",
+                          - "arn:aws:ecr:ap-south-1:874940900689:repository/moss-marrow/backend",
+                        ]
+                      - Sid      = "ECRReadImages"
+                    },
+                  - {
+                      - Action   = [
+                          - "eks:DescribeCluster",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:eks:ap-south-1:874940900689:cluster/moss-marrow-cluster"
+                      - Sid      = "EKSClusterDescribe"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - role        = "moss-marrow-github-eks-deployer" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_iam_role_policy_attachment.ec2_ssm_managed will be created
+  + resource "aws_iam_role_policy_attachment" "ec2_ssm_managed" {
+      + id         = (known after apply)
+      + policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      + role       = "moss-marrow-ec2-instance-role"
+    }
+
+  # aws_iam_role_policy_attachment.eks_cluster_policy will be destroyed
+  # (because aws_iam_role_policy_attachment.eks_cluster_policy is not in configuration)
+  - resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
+      - id         = "moss-marrow-eks-cluster-role/arn:aws:iam::aws:policy/AmazonEKSClusterPolicy" -> null
+      - policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy" -> null
+      - role       = "moss-marrow-eks-cluster-role" -> null
+    }
+
+  # aws_iam_role_policy_attachment.eks_cni_policy will be destroyed
+  # (because aws_iam_role_policy_attachment.eks_cni_policy is not in configuration)
+  - resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
+      - id         = "moss-marrow-eks-nodes-role/arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy" -> null
+      - policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy" -> null
+      - role       = "moss-marrow-eks-nodes-role" -> null
+    }
+
+  # aws_iam_role_policy_attachment.eks_ecr_read_only will be destroyed
+  # (because aws_iam_role_policy_attachment.eks_ecr_read_only is not in configuration)
+  - resource "aws_iam_role_policy_attachment" "eks_ecr_read_only" {
+      - id         = "moss-marrow-eks-nodes-role/arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly" -> null
+      - policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly" -> null
+      - role       = "moss-marrow-eks-nodes-role" -> null
+    }
+
+  # aws_iam_role_policy_attachment.eks_worker_node_policy will be destroyed
+  # (because aws_iam_role_policy_attachment.eks_worker_node_policy is not in configuration)
+  - resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
+      - id         = "moss-marrow-eks-nodes-role/arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy" -> null
+      - policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy" -> null
+      - role       = "moss-marrow-eks-nodes-role" -> null
+    }
+
+  # aws_instance.app will be created
+  + resource "aws_instance" "app" {
+      + ami                                  = "ami-0130477f3b4502061"
+      + arn                                  = (known after apply)
+      + associate_public_ip_address          = true
+      + availability_zone                    = (known after apply)
+      + disable_api_stop                     = (known after apply)
+      + disable_api_termination              = (known after apply)
+      + ebs_optimized                        = (known after apply)
+      + enable_primary_ipv6                  = (known after apply)
+      + force_destroy                        = false
+      + get_password_data                    = false
+      + host_id                              = (known after apply)
+      + host_resource_group_arn              = (known after apply)
+      + iam_instance_profile                 = "moss-marrow-ec2-instance-profile"
+      + id                                   = (known after apply)
+      + instance_initiated_shutdown_behavior = (known after apply)
+      + instance_lifecycle                   = (known after apply)
+      + instance_state                       = (known after apply)
+      + instance_type                        = "t3a.medium"
+      + ipv6_address_count                   = (known after apply)
+      + ipv6_addresses                       = (known after apply)
+      + key_name                             = (known after apply)
+      + monitoring                           = (known after apply)
+      + outpost_arn                          = (known after apply)
+      + password_data                        = (known after apply)
+      + placement_group                      = (known after apply)
+      + placement_group_id                   = (known after apply)
+      + placement_partition_number           = (known after apply)
+      + primary_network_interface_id         = (known after apply)
+      + private_dns                          = (known after apply)
+      + private_ip                           = (known after apply)
+      + public_dns                           = (known after apply)
+      + public_ip                            = (known after apply)
+      + region                               = "ap-south-1"
+      + secondary_private_ips                = (known after apply)
+      + security_groups                      = (known after apply)
+      + source_dest_check                    = true
+      + spot_instance_request_id             = (known after apply)
+      + subnet_id                            = "subnet-00dc2ec16dbf6c4af"
+      + tags                                 = {
+          + "Name" = "moss-marrow-app"
+        }
+      + tags_all                             = {
+          + "Environment" = "Infrastructure"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "moss-marrow-app"
+          + "Project"     = "MOSS-MARROW"
+        }
+      + tenancy                              = (known after apply)
+      + user_data                            = "I2Nsb3VkLWNvbmZpZwpwYWNrYWdlX3VwZGF0ZTogdHJ1ZQoKd3JpdGVfZmlsZXM6CiAgLSBwYXRoOiAvb3B0L2RlcGxveS5zaAogICAgb3duZXI6IHJvb3Q6cm9vdAogICAgcGVybWlzc2lvbnM6ICcwNzAwJwogICAgY29udGVudDogfAogICAgICAjIS9iaW4vYmFzaAogICAgICAjID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiAgICAgICMgTU9TUyAmIE1BUlJPVyDigJQgRUMyIERlcGxveW1lbnQgU2NyaXB0CiAgICAgICMgU2VjdXJlIGRlcGxveW1lbnQgdmlhIEFXUyBTeXN0ZW1zIE1hbmFnZXIgUnVuIENvbW1hbmQgb3IgQ0xJLgogICAgICAjIEFjY2VwdHMgZGlnZXN0cyB2aWEgU1NNIGVudmlyb25tZW50IHZhcmlhYmxlcyAoU1NNX2Zyb250ZW5kRGlnZXN0LCBTU01fYmFja2VuZERpZ2VzdCkKICAgICAgIyBvciBwb3NpdGlvbmFsIGFyZ3VtZW50cyAoJDEsICQyKS4KICAgICAgIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQogICAgICBzZXQgK3ggICMgTmV2ZXIgdHJhY2Ug4oCUIHByZXZlbnQgcHJpbnRpbmcgc2VjcmV0cwogICAgICAKICAgICAgc2V0IC1ldW8gcGlwZWZhaWwKICAgICAgCiAgICAgIHJlYWRvbmx5IERFUExPWV9ESVI9Ii9vcHQiCiAgICAgIHJlYWRvbmx5IENPTVBPU0VfRklMRT0iJHtERVBMT1lfRElSfS9kb2NrZXItY29tcG9zZS5kZXBsb3kueW1sIgogICAgICByZWFkb25seSBESUdFU1RTX0ZJTEU9IiR7REVQTE9ZX0RJUn0vY3VycmVudF9kaWdlc3RzLmVudiIKICAgICAgcmVhZG9ubHkgUFJFVklPVVNfRElHRVNUU19GSUxFPSIke0RFUExPWV9ESVJ9L3ByZXZpb3VzX2RpZ2VzdHMuZW52IgogICAgICByZWFkb25seSBFTlZfRklMRT0iL3RtcC8ubW9zc19tYXJyb3dfZW52LiQkIgogICAgICByZWFkb25seSBBV1NfUkVHSU9OPSJhcC1zb3V0aC0xIgogICAgICByZWFkb25seSBFQ1JfUkVHSVNUUlk9Ijg3NDk0MDkwMDY4OS5ka3IuZWNyLiR7QVdTX1JFR0lPTn0uYW1hem9uYXdzLmNvbSIKICAgICAgCiAgICAgICMgLS0tIEd1YXJhbnRlZWQgY2xlYW51cCBvbiBldmVyeSBleGl0IHBhdGggLS0tCiAgICAgIGNsZWFudXAoKSB7CiAgICAgICAgbG9jYWwgZXhpdF9jb2RlPSQ/CiAgICAgICAgaWYgW1sgLWYgIiR7RU5WX0ZJTEV9IiBdXTsgdGhlbgogICAgICAgICAgcm0gLWYgIiR7RU5WX0ZJTEV9IgogICAgICAgIGZpCiAgICAgICAgZXhpdCAiJHtleGl0X2NvZGV9IgogICAgICB9CiAgICAgIHRyYXAgY2xlYW51cCBFWElUIElOVCBURVJNCiAgICAgIAogICAgICAjIC0tLSBSZXNvbHZlIGFuZCB2YWxpZGF0ZSBkaWdlc3RzIC0tLQogICAgICBGUk9OVEVORF9ESUdFU1Q9IiR7U1NNX2Zyb250ZW5kRGlnZXN0Oi0kezE6LX19IgogICAgICBCQUNLRU5EX0RJR0VTVD0iJHtTU01fYmFja2VuZERpZ2VzdDotJHsyOi19fSIKICAgICAgCiAgICAgIGlmIFtbIC16ICIke0ZST05URU5EX0RJR0VTVH0iIF1dOyB0aGVuCiAgICAgICAgZWNobyAiRVJST1I6IEZyb250ZW5kIGltYWdlIGRpZ2VzdCBpcyByZXF1aXJlZCAodmlhIFNTTV9mcm9udGVuZERpZ2VzdCBvciBcJDEpIiA+JjIKICAgICAgICBleGl0IDEKICAgICAgZmkKICAgICAgCiAgICAgIGlmIFtbIC16ICIke0JBQ0tFTkRfRElHRVNUfSIgXV07IHRoZW4KICAgICAgICBlY2hvICJFUlJPUjogQmFja2VuZCBpbWFnZSBkaWdlc3QgaXMgcmVxdWlyZWQgKHZpYSBTU01fYmFja2VuZERpZ2VzdCBvciBcJDIpIiA+JjIKICAgICAgICBleGl0IDEKICAgICAgZmkKICAgICAgCiAgICAgIGlmIFtbICEgIiR7RlJPTlRFTkRfRElHRVNUfSIgPX4gXnNoYTI1NjpbYS1mMC05XXs2NH0kIF1dOyB0aGVuCiAgICAgICAgZWNobyAiRVJST1I6IEludmFsaWQgZnJvbnRlbmQgZGlnZXN0IGZvcm1hdC4gRXhwZWN0ZWQgXnNoYTI1NjpbYS1mMC05XXs2NH0kLCBnb3Q6ICR7RlJPTlRFTkRfRElHRVNUfSIgPiYyCiAgICAgICAgZXhpdCAxCiAgICAgIGZpCiAgICAgIAogICAgICBpZiBbWyAhICIke0JBQ0tFTkRfRElHRVNUfSIgPX4gXnNoYTI1NjpbYS1mMC05XXs2NH0kIF1dOyB0aGVuCiAgICAgICAgZWNobyAiRVJST1I6IEludmFsaWQgYmFja2VuZCBkaWdlc3QgZm9ybWF0LiBFeHBlY3RlZCBec2hhMjU2OlthLWYwLTldezY0fSQsIGdvdDogJHtCQUNLRU5EX0RJR0VTVH0iID4mMgogICAgICAgIGV4aXQgMQogICAgICBmaQogICAgICAKICAgICAgRlJPTlRFTkRfSU1BR0U9IiR7RUNSX1JFR0lTVFJZfS9tb3NzLW1hcnJvdy9mcm9udGVuZEAke0ZST05URU5EX0RJR0VTVH0iCiAgICAgIEJBQ0tFTkRfSU1BR0U9IiR7RUNSX1JFR0lTVFJZfS9tb3NzLW1hcnJvdy9iYWNrZW5kQCR7QkFDS0VORF9ESUdFU1R9IgogICAgICAKICAgICAgZWNobyAiU3RhcnRpbmcgZGVwbG95bWVudCBmb3IgTU9TUyAmIE1BUlJPVzoiCiAgICAgIGVjaG8gIiAgRnJvbnRlbmQgaW1hZ2U6ICR7RlJPTlRFTkRfSU1BR0V9IgogICAgICBlY2hvICIgIEJhY2tlbmQgaW1hZ2U6ICAke0JBQ0tFTkRfSU1BR0V9IgogICAgICAKICAgICAgIyAtLS0gUHJlc2VydmUgY3VycmVudCBkaWdlc3RzIGZvciByb2xsYmFjayAtLS0KICAgICAgaWYgW1sgLWYgIiR7RElHRVNUU19GSUxFfSIgXV07IHRoZW4KICAgICAgICBjcCAiJHtESUdFU1RTX0ZJTEV9IiAiJHtQUkVWSU9VU19ESUdFU1RTX0ZJTEV9IgogICAgICBmaQogICAgICAKICAgICAgIyAtLS0gQXV0aGVudGljYXRlIERvY2tlciB0byBFQ1IgdXNpbmcgRUMyIGluc3RhbmNlIHByb2ZpbGUgLS0tCiAgICAgIGVjaG8gIkF1dGhlbnRpY2F0aW5nIERvY2tlciB0byBBbWF6b24gRUNSLi4uIgogICAgICBhd3MgZWNyIGdldC1sb2dpbi1wYXNzd29yZCAtLXJlZ2lvbiAiJHtBV1NfUkVHSU9OfSIgfCBcCiAgICAgICAgZG9ja2VyIGxvZ2luIC0tdXNlcm5hbWUgQVdTIC0tcGFzc3dvcmQtc3RkaW4gIiR7RUNSX1JFR0lTVFJZfSIgPi9kZXYvbnVsbCAyPiYxCiAgICAgIAogICAgICAjIC0tLSBQdWxsIGltbXV0YWJsZSBpbWFnZXMgLS0tCiAgICAgIGVjaG8gIlB1bGxpbmcgaW1hZ2VzLi4uIgogICAgICBkb2NrZXIgcHVsbCAiJHtGUk9OVEVORF9JTUFHRX0iCiAgICAgIGRvY2tlciBwdWxsICIke0JBQ0tFTkRfSU1BR0V9IgogICAgICAKICAgICAgIyAtLS0gUmV0cmlldmUgYXBwbGljYXRpb24gc2VjcmV0cyBmcm9tIEFXUyBTZWNyZXRzIE1hbmFnZXIgLS0tCiAgICAgIGVjaG8gIlJldHJpZXZpbmcgYXBwbGljYXRpb24gc2VjcmV0cyBmcm9tIEFXUyBTZWNyZXRzIE1hbmFnZXIuLi4iCiAgICAgIGluc3RhbGwgLW0gMDYwMCAvZGV2L251bGwgIiR7RU5WX0ZJTEV9IgogICAgICAKICAgICAgTU9OR09EQl9VUkk9IiQoYXdzIHNlY3JldHNtYW5hZ2VyIGdldC1zZWNyZXQtdmFsdWUgXAogICAgICAgIC0tcmVnaW9uICIke0FXU19SRUdJT059IiBcCiAgICAgICAgLS1zZWNyZXQtaWQgIm1vc3MtbWFycm93L01PTkdPREJfVVJJIiBcCiAgICAgICAgLS1xdWVyeSAnU2VjcmV0U3RyaW5nJyBcCiAgICAgICAgLS1vdXRwdXQgdGV4dCAyPi9kZXYvbnVsbCkiCiAgICAgIAogICAgICBKV1RfQUNDRVNTX1NFQ1JFVD0iJChhd3Mgc2VjcmV0c21hbmFnZXIgZ2V0LXNlY3JldC12YWx1ZSBcCiAgICAgICAgLS1yZWdpb24gIiR7QVdTX1JFR0lPTn0iIFwKICAgICAgICAtLXNlY3JldC1pZCAibW9zcy1tYXJyb3cvSldUX0FDQ0VTU19TRUNSRVQiIFwKICAgICAgICAtLXF1ZXJ5ICdTZWNyZXRTdHJpbmcnIFwKICAgICAgICAtLW91dHB1dCB0ZXh0IDI+L2Rldi9udWxsKSIKICAgICAgCiAgICAgIGlmIFtbIC16ICIke01PTkdPREJfVVJJfSIgfHwgIiR7TU9OR09EQl9VUkl9IiA9PSAiTm9uZSIgXV07IHRoZW4KICAgICAgICBlY2hvICJFUlJPUjogRmFpbGVkIHRvIHJldHJpZXZlIE1PTkdPREJfVVJJIHNlY3JldCBmcm9tIFNlY3JldHMgTWFuYWdlciIgPiYyCiAgICAgICAgZXhpdCAxCiAgICAgIGZpCiAgICAgIAogICAgICBpZiBbWyAteiAiJHtKV1RfQUNDRVNTX1NFQ1JFVH0iIHx8ICIke0pXVF9BQ0NFU1NfU0VDUkVUfSIgPT0gIk5vbmUiIF1dOyB0aGVuCiAgICAgICAgZWNobyAiRVJST1I6IEZhaWxlZCB0byByZXRyaWV2ZSBKV1RfQUNDRVNTX1NFQ1JFVCBzZWNyZXQgZnJvbSBTZWNyZXRzIE1hbmFnZXIiID4mMgogICAgICAgIGV4aXQgMQogICAgICBmaQogICAgICAKICAgICAgewogICAgICAgIHByaW50ZiAnTU9OR09EQl9VUkk9JXNcbicgIiR7TU9OR09EQl9VUkl9IgogICAgICAgIHByaW50ZiAnSldUX0FDQ0VTU19TRUNSRVQ9JXNcbicgIiR7SldUX0FDQ0VTU19TRUNSRVR9IgogICAgICB9ID4+ICIke0VOVl9GSUxFfSIKICAgICAgCiAgICAgICMgLS0tIEdlbmVyYXRlIHByb2R1Y3Rpb24gRG9ja2VyIENvbXBvc2Ugc3BlY2lmaWNhdGlvbiAtLS0KICAgICAgY2F0ID4gIiR7Q09NUE9TRV9GSUxFfSIgPDxDT01QT1NFRklMRQogICAgICBzZXJ2aWNlczoKICAgICAgICBkYXRhYmFzZToKICAgICAgICAgIGltYWdlOiBtb25nbzo3LjAKICAgICAgICAgIGNvbnRhaW5lcl9uYW1lOiBtb3NzX21hcnJvd19kYgogICAgICAgICAgcmVzdGFydDogdW5sZXNzLXN0b3BwZWQKICAgICAgICAgIGVudmlyb25tZW50OgogICAgICAgICAgICBNT05HT19JTklUREJfREFUQUJBU0U6IG1vc3NfYW5kX21hcnJvdwogICAgICAgICAgdm9sdW1lczoKICAgICAgICAgICAgLSBtb25nb19kYXRhOi9kYXRhL2RiCiAgICAgICAgICBuZXR3b3JrczoKICAgICAgICAgICAgLSBpbnRlcm5hbF9uZXR3b3JrCiAgICAgICAgICBoZWFsdGhjaGVjazoKICAgICAgICAgICAgdGVzdDogWyJDTUQiLCAibW9uZ29zaCIsICItLWV2YWwiLCAiZGIuYWRtaW5Db21tYW5kKCdwaW5nJykiXQogICAgICAgICAgICBpbnRlcnZhbDogMTBzCiAgICAgICAgICAgIHRpbWVvdXQ6IDVzCiAgICAgICAgICAgIHJldHJpZXM6IDUKICAgICAgICAgICAgc3RhcnRfcGVyaW9kOiAxMHMKICAgICAgCiAgICAgICAgYmFja2VuZDoKICAgICAgICAgIGltYWdlOiAke0JBQ0tFTkRfSU1BR0V9CiAgICAgICAgICBjb250YWluZXJfbmFtZTogbW9zc19tYXJyb3dfYmFja2VuZAogICAgICAgICAgcmVzdGFydDogdW5sZXNzLXN0b3BwZWQKICAgICAgICAgIGVudl9maWxlOgogICAgICAgICAgICAtICR7RU5WX0ZJTEV9CiAgICAgICAgICBlbnZpcm9ubWVudDoKICAgICAgICAgICAgUE9SVDogIjUwMDAiCiAgICAgICAgICAgIEhPU1Q6ICIwLjAuMC4wIgogICAgICAgICAgICBOT0RFX0VOVjogInByb2R1Y3Rpb24iCiAgICAgICAgICAgIENMSUVOVF9VUkw6ICJodHRwOi8vbG9jYWxob3N0OjgwIgogICAgICAgICAgZGVwZW5kc19vbjoKICAgICAgICAgICAgZGF0YWJhc2U6CiAgICAgICAgICAgICAgY29uZGl0aW9uOiBzZXJ2aWNlX2hlYWx0aHkKICAgICAgICAgIG5ldHdvcmtzOgogICAgICAgICAgICAtIGludGVybmFsX25ldHdvcmsKICAgICAgICAgIGhlYWx0aGNoZWNrOgogICAgICAgICAgICB0ZXN0OiBbIkNNRCIsICJ3Z2V0IiwgIi1xTy0iLCAiaHR0cDovLzEyNy4wLjAuMTo1MDAwL2FwaS92MS9oZWFsdGgiXQogICAgICAgICAgICBpbnRlcnZhbDogMTVzCiAgICAgICAgICAgIHRpbWVvdXQ6IDVzCiAgICAgICAgICAgIHJldHJpZXM6IDMKICAgICAgICAgICAgc3RhcnRfcGVyaW9kOiAxNXMKICAgICAgCiAgICAgICAgZnJvbnRlbmQ6CiAgICAgICAgICBpbWFnZTogJHtGUk9OVEVORF9JTUFHRX0KICAgICAgICAgIGNvbnRhaW5lcl9uYW1lOiBtb3NzX21hcnJvd19mcm9udGVuZAogICAgICAgICAgcmVzdGFydDogdW5sZXNzLXN0b3BwZWQKICAgICAgICAgIHBvcnRzOgogICAgICAgICAgICAtICI4MDo4MCIKICAgICAgICAgIGRlcGVuZHNfb246CiAgICAgICAgICAgIGJhY2tlbmQ6CiAgICAgICAgICAgICAgY29uZGl0aW9uOiBzZXJ2aWNlX2hlYWx0aHkKICAgICAgICAgIG5ldHdvcmtzOgogICAgICAgICAgICAtIGludGVybmFsX25ldHdvcmsKICAgICAgCiAgICAgIG5ldHdvcmtzOgogICAgICAgIGludGVybmFsX25ldHdvcms6CiAgICAgICAgICBkcml2ZXI6IGJyaWRnZQogICAgICAKICAgICAgdm9sdW1lczoKICAgICAgICBtb25nb19kYXRhOgogICAgICAgICAgZHJpdmVyOiBsb2NhbAogICAgICBDT01QT1NFRklMRQogICAgICAKICAgICAgZWNobyAiR2VuZXJhdGVkIERvY2tlciBDb21wb3NlIHNwZWNpZmljYXRpb24uIgogICAgICAKICAgICAgIyAtLS0gRGVwbG95IHNlcnZpY2VzIC0tLQogICAgICBlY2hvICJMYXVuY2hpbmcgY29udGFpbmVycyB3aXRoIERvY2tlciBDb21wb3NlLi4uIgogICAgICBkb2NrZXIgY29tcG9zZSAtZiAiJHtDT01QT1NFX0ZJTEV9IiB1cCAtZCAtLXJlbW92ZS1vcnBoYW5zCiAgICAgIAogICAgICAjIC0tLSBIZWFsdGggY2hlY2sgdmFsaWRhdGlvbiAtLS0KICAgICAgZWNobyAiVmFsaWRhdGluZyBhcHBsaWNhdGlvbiBoZWFsdGguLi4iCiAgICAgIEhFQUxUSF9PSz1mYWxzZQogICAgICAKICAgICAgZm9yIGkgaW4gJChzZXEgMSAyNCk7IGRvCiAgICAgICAgc2xlZXAgNQogICAgICAgIENPTlRBSU5FUl9JRD0iJChkb2NrZXIgY29tcG9zZSAtZiAiJHtDT01QT1NFX0ZJTEV9IiBwcyAtcSBiYWNrZW5kIDI+L2Rldi9udWxsIHx8IHRydWUpIgogICAgICAgIGlmIFtbIC16ICIke0NPTlRBSU5FUl9JRH0iIF1dOyB0aGVuCiAgICAgICAgICBlY2hvICIgIEF0dGVtcHQgJHtpfS8yNCDigJQgYmFja2VuZCBjb250YWluZXIgbm90IGZvdW5kIgogICAgICAgICAgY29udGludWUKICAgICAgICBmaQogICAgICAKICAgICAgICAjIFF1ZXJ5IGhlYWx0aCBlbmRwb2ludCBmcm9tIGluc2lkZSB0aGUgYmFja2VuZCBjb250YWluZXIgKHN1cHBvcnRzIHdnZXQgb3Igbm9kZSkKICAgICAgICBIVFRQX1JFU1BPTlNFPSIkKGRvY2tlciBleGVjICIke0NPTlRBSU5FUl9JRH0iIHNoIC1jIFwKICAgICAgICAgICd3Z2V0IC1xTy0gLVQgMyAiaHR0cDovLzEyNy4wLjAuMTo1MDAwL2FwaS92MS9oZWFsdGgiIDI+L2Rldi9udWxsIHx8IG5vZGUgLWUgImNvbnN0IGh0dHA9cmVxdWlyZShcImh0dHBcIik7aHR0cC5nZXQoXCJodHRwOi8vMTI3LjAuMC4xOjUwMDAvYXBpL3YxL2hlYWx0aFwiLChyKT0+e2xldCBkPVwiXCI7ci5vbihcImRhdGFcIixjPT5kKz1jKTtyLm9uKFwiZW5kXCIsKCk9PmNvbnNvbGUubG9nKGQpKX0pLm9uKFwiZXJyb3JcIiwoKT0+e30pOyIgMj4vZGV2L251bGwnIHx8IHRydWUpIgogICAgICAKICAgICAgICBpZiBlY2hvICIke0hUVFBfUkVTUE9OU0V9IiB8IGdyZXAgLXEgJyJzdGF0dXMiOiJvayInOyB0aGVuCiAgICAgICAgICBlY2hvICLinIUgQXBwbGljYXRpb24gaGVhbHRoIGNoZWNrIHBhc3NlZCAoL2FwaS92MS9oZWFsdGggcmV0dXJuZWQgc3RhdHVzOiBvaykiCiAgICAgICAgICBIRUFMVEhfT0s9dHJ1ZQogICAgICAgICAgYnJlYWsKICAgICAgICBmaQogICAgICAKICAgICAgICBlY2hvICIgIEF0dGVtcHQgJHtpfS8yNCDigJQgd2FpdGluZyBmb3IgYmFja2VuZCB0byBiZSBoZWFsdGh5Li4uIgogICAgICBkb25lCiAgICAgIAogICAgICBpZiBbWyAiJHtIRUFMVEhfT0t9IiAhPSAidHJ1ZSIgXV07IHRoZW4KICAgICAgICBlY2hvICLinYwgRVJST1I6IEJhY2tlbmQgaGVhbHRoIGNoZWNrIGZhaWxlZCBhZnRlciAyNCBhdHRlbXB0cyAoMTIwcykuIiA+JjIKICAgICAgCiAgICAgICAgIyAtLS0gQXV0b21hdGVkIG5vbi1yZWN1cnNpdmUgcm9sbGJhY2sgLS0tCiAgICAgICAgaWYgW1sgLWYgIiR7UFJFVklPVVNfRElHRVNUU19GSUxFfSIgXV07IHRoZW4KICAgICAgICAgIGVjaG8gIuKaoO+4jyBJbml0aWF0aW5nIGF1dG9tYXRlZCByb2xsYmFjayB0byBwcmV2aW91cyBkZXBsb3ltZW50Li4uIgogICAgICAgICAgIyBzaGVsbGNoZWNrIHNvdXJjZT0vZGV2L251bGwKICAgICAgICAgIHNvdXJjZSAiJHtQUkVWSU9VU19ESUdFU1RTX0ZJTEV9IgogICAgICAgICAgUFJFVl9GRT0iJHtFQ1JfUkVHSVNUUll9L21vc3MtbWFycm93L2Zyb250ZW5kQCR7UFJFVl9GUk9OVEVORF9ESUdFU1R9IgogICAgICAgICAgUFJFVl9CRT0iJHtFQ1JfUkVHSVNUUll9L21vc3MtbWFycm93L2JhY2tlbmRAJHtQUkVWX0JBQ0tFTkRfRElHRVNUfSIKICAgICAgCiAgICAgICAgICBzZWQgLWkgInN8aW1hZ2U6ICR7QkFDS0VORF9JTUFHRX18aW1hZ2U6ICR7UFJFVl9CRX18IiAiJHtDT01QT1NFX0ZJTEV9IgogICAgICAgICAgc2VkIC1pICJzfGltYWdlOiAke0ZST05URU5EX0lNQUdFfXxpbWFnZTogJHtQUkVWX0ZFfXwiICIke0NPTVBPU0VfRklMRX0iCiAgICAgIAogICAgICAgICAgZG9ja2VyIGNvbXBvc2UgLWYgIiR7Q09NUE9TRV9GSUxFfSIgdXAgLWQgLS1yZW1vdmUtb3JwaGFucwogICAgICAgICAgZWNobyAiUm9sbGJhY2sgY29udGFpbmVycyBkZXBsb3llZC4gUHJlc2VydmluZyBvcmlnaW5hbCBmYWlsdXJlIHN0YXR1cy4iCiAgICAgICAgZWxzZQogICAgICAgICAgZWNobyAi4pqg77iPIE5vIHByZXZpb3VzIGRlcGxveW1lbnQgcmVjb3JkIGZvdW5kLiBIYWx0aW5nIGZhaWxlZCBjb250YWluZXJzLiIKICAgICAgICAgIGRvY2tlciBjb21wb3NlIC1mICIke0NPTVBPU0VfRklMRX0iIGRvd24KICAgICAgICBmaQogICAgICAKICAgICAgICBleGl0IDEKICAgICAgZmkKICAgICAgCiAgICAgICMgLS0tIFBlcnNpc3QgY3VycmVudCBzdWNjZXNzZnVsIGRpZ2VzdHMgZm9yIGZ1dHVyZSByb2xsYmFjayAtLS0KICAgICAgY2F0ID4gIiR7RElHRVNUU19GSUxFfSIgPDxFT0YKICAgICAgUFJFVl9GUk9OVEVORF9ESUdFU1Q9JHtGUk9OVEVORF9ESUdFU1R9CiAgICAgIFBSRVZfQkFDS0VORF9ESUdFU1Q9JHtCQUNLRU5EX0RJR0VTVH0KICAgICAgRU9GCiAgICAgIAogICAgICBlY2hvICLinIUgTU9TUyAmIE1BUlJPVyBkZXBsb3ltZW50IGNvbXBsZXRlZCBzdWNjZXNzZnVsbHkuIgogICAgICAKCnJ1bmNtZDoKICAjIEluc3RhbGwgYW5kIHN0YXJ0IERvY2tlciBFbmdpbmUgb24gQW1hem9uIExpbnV4IDIwMjMKICAtIGRuZiBpbnN0YWxsIC15IGRvY2tlcgogIC0gc3lzdGVtY3RsIGVuYWJsZSAtLW5vdyBkb2NrZXIKICAtIHVzZXJtb2QgLWFHIGRvY2tlciBlYzItdXNlcgoKICAjIEluc3RhbGwgRG9ja2VyIENvbXBvc2UgdjIgcGx1Z2luCiAgLSBta2RpciAtcCAvdXNyL2xvY2FsL2xpYi9kb2NrZXIvY2xpLXBsdWdpbnMKICAtIGN1cmwgLVNMICJodHRwczovL2dpdGh1Yi5jb20vZG9ja2VyL2NvbXBvc2UvcmVsZWFzZXMvbGF0ZXN0L2Rvd25sb2FkL2RvY2tlci1jb21wb3NlLWxpbnV4LXg4Nl82NCIgLW8gL3Vzci9sb2NhbC9saWIvZG9ja2VyL2NsaS1wbHVnaW5zL2RvY2tlci1jb21wb3NlCiAgLSBjaG1vZCAreCAvdXNyL2xvY2FsL2xpYi9kb2NrZXIvY2xpLXBsdWdpbnMvZG9ja2VyLWNvbXBvc2UKCiAgIyBWZXJpZnkgQVdTIENMSSB2MiBpcyBwcmVzZW50IGFuZCBlbmFibGUgU1NNIEFnZW50CiAgLSBzeXN0ZW1jdGwgZW5hYmxlIC0tbm93IGFtYXpvbi1zc20tYWdlbnQK"
+      + user_data_base64                     = (known after apply)
+      + user_data_replace_on_change          = true
+      + vpc_security_group_ids               = (known after apply)
+
+      + capacity_reservation_specification (known after apply)
+
+      + cpu_options (known after apply)
+
+      + ebs_block_device (known after apply)
+
+      + enclave_options (known after apply)
+
+      + ephemeral_block_device (known after apply)
+
+      + instance_market_options (known after apply)
+
+      + maintenance_options (known after apply)
+
+      + metadata_options (known after apply)
+
+      + network_interface (known after apply)
+
+      + primary_network_interface (known after apply)
+
+      + private_dns_name_options (known after apply)
+
+      + root_block_device {
+          + delete_on_termination = true
+          + device_name           = (known after apply)
+          + encrypted             = true
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + tags_all              = (known after apply)
+          + throughput            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = 20
+          + volume_type           = "gp3"
+        }
+
+      + secondary_network_interface (known after apply)
+    }
+
+  # aws_nat_gateway.main[0] will be destroyed
+  # (because index [0] is out of range for count)
+  - resource "aws_nat_gateway" "main" {
+      - allocation_id                      = "eipalloc-042a4ce6d44385c0c" -> null
+      - association_id                     = "eipassoc-06b5d335f887fb9bf" -> null
+      - availability_mode                  = "zonal" -> null
+      - connectivity_type                  = "public" -> null
+      - id                                 = "nat-0c104d8bd5320a5dc" -> null
+      - network_interface_id               = "eni-060f6f154db1e560f" -> null
+      - private_ip                         = "10.0.1.71" -> null
+      - public_ip                          = "3.111.12.27" -> null
+      - region                             = "ap-south-1" -> null
+      - regional_nat_gateway_address       = [] -> null
+      - secondary_allocation_ids           = [] -> null
+      - secondary_private_ip_address_count = 0 -> null
+      - secondary_private_ip_addresses     = [] -> null
+      - subnet_id                          = "subnet-00dc2ec16dbf6c4af" -> null
+      - tags                               = {
+          - "Name" = "moss-marrow-nat-gateway"
+        } -> null
+      - tags_all                           = {
+          - "Environment" = "Infrastructure"
+          - "ManagedBy"   = "Terraform"
+          - "Name"        = "moss-marrow-nat-gateway"
+          - "Project"     = "MOSS-MARROW"
+        } -> null
+      - vpc_id                             = "vpc-056abcc0d656c5d71" -> null
+    }
+
+  # aws_secretsmanager_secret.jwt_secret will be created
+  + resource "aws_secretsmanager_secret" "jwt_secret" {
+      + arn                            = (known after apply)
+      + description                    = "JWT signing secret for MOSS & MARROW backend"
+      + force_overwrite_replica_secret = false
+      + id                             = (known after apply)
+      + name                           = "moss-marrow/JWT_ACCESS_SECRET"
+      + name_prefix                    = (known after apply)
+      + policy                         = (known after apply)
+      + recovery_window_in_days        = 7
+      + region                         = "ap-south-1"
+      + tags                           = {
+          + "Component" = "Backend"
+        }
+      + tags_all                       = {
+          + "Component"   = "Backend"
+          + "Environment" = "Infrastructure"
+          + "ManagedBy"   = "Terraform"
+          + "Project"     = "MOSS-MARROW"
+        }
+    }
+
+  # aws_secretsmanager_secret.mongodb_uri will be created
+  + resource "aws_secretsmanager_secret" "mongodb_uri" {
+      + arn                            = (known after apply)
+      + description                    = "MongoDB connection URI for MOSS & MARROW backend"
+      + force_overwrite_replica_secret = false
+      + id                             = (known after apply)
+      + name                           = "moss-marrow/MONGODB_URI"
+      + name_prefix                    = (known after apply)
+      + policy                         = (known after apply)
+      + recovery_window_in_days        = 7
+      + region                         = "ap-south-1"
+      + tags                           = {
+          + "Component" = "Backend"
+        }
+      + tags_all                       = {
+          + "Component"   = "Backend"
+          + "Environment" = "Infrastructure"
+          + "ManagedBy"   = "Terraform"
+          + "Project"     = "MOSS-MARROW"
+        }
+    }
+
+  # aws_security_group.ec2 will be created
+  + resource "aws_security_group" "ec2" {
+      + arn                    = (known after apply)
+      + description            = "Security group for MOSS & MARROW EC2 instance"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = "Allow all outbound traffic"
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = "HTTP from anywhere"
+              + from_port        = 80
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 80
+            },
+        ]
+      + name                   = (known after apply)
+      + name_prefix            = "moss-marrow-ec2-"
+      + owner_id               = (known after apply)
+      + region                 = "ap-south-1"
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "moss-marrow-ec2-sg"
+        }
+      + tags_all               = {
+          + "Environment" = "Infrastructure"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "moss-marrow-ec2-sg"
+          + "Project"     = "MOSS-MARROW"
+        }
+      + vpc_id                 = "vpc-056abcc0d656c5d71"
+    }
+
+  # aws_ssm_document.deploy will be created
+  + resource "aws_ssm_document" "deploy" {
+      + arn              = (known after apply)
+      + content          = <<-EOT
+            "description": "Deploy MOSS & MARROW containers via Docker Compose"
+            "mainSteps":
+            - "action": "aws:runShellScript"
+              "inputs":
+                "runCommand":
+                - "/opt/deploy.sh"
+                "timeoutSeconds": "300"
+                "workingDirectory": "/opt"
+              "name": "deploy"
+            "parameters":
+              "backendDigest":
+                "allowedPattern": "^sha256:[a-f0-9]{64}$"
+                "description": "Backend image digest (sha256:...)"
+                "interpolationType": "ENV_VAR"
+                "type": "String"
+              "frontendDigest":
+                "allowedPattern": "^sha256:[a-f0-9]{64}$"
+                "description": "Frontend image digest (sha256:...)"
+                "interpolationType": "ENV_VAR"
+                "type": "String"
+            "schemaVersion": "2.2"
+        EOT
+      + created_date     = (known after apply)
+      + default_version  = (known after apply)
+      + description      = (known after apply)
+      + document_format  = "YAML"
+      + document_type    = "Command"
+      + document_version = (known after apply)
+      + hash             = (known after apply)
+      + hash_type        = (known after apply)
+      + id               = (known after apply)
+      + latest_version   = (known after apply)
+      + name             = "moss-marrow-deploy"
+      + owner            = (known after apply)
+      + parameter        = (known after apply)
+      + platform_types   = (known after apply)
+      + region           = "ap-south-1"
+      + schema_version   = (known after apply)
+      + status           = (known after apply)
+      + tags             = {
+          + "Name" = "moss-marrow-deploy"
+        }
+      + tags_all         = {
+          + "Environment" = "Infrastructure"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "moss-marrow-deploy"
+          + "Project"     = "MOSS-MARROW"
+        }
+    }
+
+  # aws_subnet.private[0] will be updated in-place
+  ~ resource "aws_subnet" "private" {
+        id                                             = "subnet-05307b51a0a570db9"
+      ~ tags                                           = {
+            "Name"                                      = "moss-marrow-private-ap-south-1a"
+          - "kubernetes.io/cluster/moss-marrow-cluster" = "shared" -> null
+          - "kubernetes.io/role/internal-elb"           = "1" -> null
+        }
+      ~ tags_all                                       = {
+          - "kubernetes.io/cluster/moss-marrow-cluster" = "shared" -> null
+          - "kubernetes.io/role/internal-elb"           = "1" -> null
+            # (4 unchanged elements hidden)
+        }
+        # (20 unchanged attributes hidden)
+    }
+
+  # aws_subnet.private[1] will be updated in-place
+  ~ resource "aws_subnet" "private" {
+        id                                             = "subnet-029501a633d268089"
+      ~ tags                                           = {
+            "Name"                                      = "moss-marrow-private-ap-south-1b"
+          - "kubernetes.io/cluster/moss-marrow-cluster" = "shared" -> null
+          - "kubernetes.io/role/internal-elb"           = "1" -> null
+        }
+      ~ tags_all                                       = {
+          - "kubernetes.io/cluster/moss-marrow-cluster" = "shared" -> null
+          - "kubernetes.io/role/internal-elb"           = "1" -> null
+            # (4 unchanged elements hidden)
+        }
+        # (20 unchanged attributes hidden)
+    }
+
+  # aws_subnet.public[0] will be updated in-place
+  ~ resource "aws_subnet" "public" {
+        id                                             = "subnet-00dc2ec16dbf6c4af"
+      ~ tags                                           = {
+            "Name"                                      = "moss-marrow-public-ap-south-1a"
+          - "kubernetes.io/cluster/moss-marrow-cluster" = "shared" -> null
+          - "kubernetes.io/role/elb"                    = "1" -> null
+        }
+      ~ tags_all                                       = {
+          - "kubernetes.io/cluster/moss-marrow-cluster" = "shared" -> null
+          - "kubernetes.io/role/elb"                    = "1" -> null
+            # (4 unchanged elements hidden)
+        }
+        # (20 unchanged attributes hidden)
+    }
+
+  # aws_subnet.public[1] will be updated in-place
+  ~ resource "aws_subnet" "public" {
+        id                                             = "subnet-0f47a5461323eec6f"
+      ~ tags                                           = {
+            "Name"                                      = "moss-marrow-public-ap-south-1b"
+          - "kubernetes.io/cluster/moss-marrow-cluster" = "shared" -> null
+          - "kubernetes.io/role/elb"                    = "1" -> null
+        }
+      ~ tags_all                                       = {
+          - "kubernetes.io/cluster/moss-marrow-cluster" = "shared" -> null
+          - "kubernetes.io/role/elb"                    = "1" -> null
+            # (4 unchanged elements hidden)
+        }
+        # (20 unchanged attributes hidden)
+    }
+
+  # aws_vpc.main will be updated in-place
+  ~ resource "aws_vpc" "main" {
+        id                                   = "vpc-056abcc0d656c5d71"
+      ~ tags                                 = {
+            "Name"                                      = "moss-marrow-vpc"
+          - "kubernetes.io/cluster/moss-marrow-cluster" = "shared" -> null
+        }
+      ~ tags_all                             = {
+          - "kubernetes.io/cluster/moss-marrow-cluster" = "shared" -> null
+            # (4 unchanged elements hidden)
+        }
+        # (19 unchanged attributes hidden)
+    }
+
+Plan: 12 to add, 7 to change, 14 to destroy.
+
+Changes to Outputs:
+  - configure_kubectl_command   = "aws eks update-kubeconfig --region ap-south-1 --name moss-marrow-cluster" -> null
+  + ec2_instance_id             = (known after apply)
+  + ec2_public_ip               = (known after apply)
+  - eks_cluster_endpoint        = "https://62E8A3FDBDDBF545C36462AF582C31B1.gr7.ap-south-1.eks.amazonaws.com" -> null
+  - eks_cluster_name            = "moss-marrow-cluster" -> null
+  - eks_cluster_version         = "1.31" -> null
+  ~ github_deploy_role_arn      = "arn:aws:iam::874940900689:role/moss-marrow-github-eks-deployer" -> (known after apply)
+  + jwt_secret_arn              = (known after apply)
+  + mongodb_secret_arn          = (known after apply)
+  + ssm_document_name           = "moss-marrow-deploy"

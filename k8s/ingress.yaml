@@ -1,0 +1,31 @@
+# =============================================================================
+# Kubernetes Ingress — MOSS & MARROW
+# =============================================================================
+# Optional Ingress resource for environments with an Ingress Controller
+# (e.g., AWS Load Balancer Controller / Ingress-NGINX).
+# In standard EKS without an Ingress controller, the LoadBalancer service
+# (k8s/frontend/service.yaml) handles ingress directly.
+# =============================================================================
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: moss-marrow-ingress
+  namespace: moss-marrow
+  labels:
+    app.kubernetes.io/name: moss-marrow
+  annotations:
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/target-type: "ip"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: moss-marrow-frontend
+                port:
+                  number: 80
