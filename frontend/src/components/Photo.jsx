@@ -17,5 +17,5 @@ export function Photo({ src, alt, priority = false, sizes = '100vw', className =
   return <img className={className} src={src} alt={alt} decoding="async"
     loading={priority ? 'eager' : 'lazy'} fetchPriority={priority ? 'high' : undefined}
     srcSet={widths.length ? widths.map(w => ((w === 1200 || w === 3840) ? src : src.replace('.webp', '-' + w + '.webp')) + ' ' + w + 'w').join(', ') : undefined}
-    sizes={widths.length ? sizes : undefined} onError={() => setFailed(src)} {...rest} />;
+    sizes={widths.length || rest.srcSet ? sizes : undefined} onError={() => setFailed(src)} {...rest} />;
 }

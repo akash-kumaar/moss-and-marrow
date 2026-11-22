@@ -5,6 +5,9 @@ export default function FoodPointer(){
   useEffect(()=>{
     const query=matchMedia('(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference)');
     const el=node.current;
+    const touchRing = el.nextElementSibling;
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    let touch = null;
     let frame=0,x=0,y=0,tx=0,ty=0;
     const draw=()=>{
       x+=(tx-x)*.23;
@@ -46,6 +49,9 @@ export default function FoodPointer(){
     };
     const burst=e=>{
       if(!query.matches||e.pointerType!=='mouse'||e.button!==0||!e.target.closest('.button,.gallery-tile,.shop-icon,.signature-item a'))return;
+      showBurst(e);
+    };
+    const showBurst = e => {
       const ring=document.createElement('i');
       ring.className='food-burst';
       ring.style.left=e.clientX+'px';
@@ -53,6 +59,28 @@ export default function FoodPointer(){
       el.parentElement.append(ring);
       ring.addEventListener('animationend',()=>ring.remove(),{once:true});
     };
+    const startTouch = e => {
+      if (e.pointerType !== 'touch' || !e.isPrimary) return;
+      leave();
+      touch = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
+      moveTouch(e);
+    };
+    const moveTouch = e => {
+      if (touch?.id !== e.pointerId) return;
+      touch.moved ||= Math.hypot(e.clientX - touch.x, e.clientY - touch.y) > 10;
+      touchRing.style.transform = 'translate3d(' + e.clientX + 'px,' + e.clientY + 'px,0)';
+      touchRing.hidden = false;
+    };
+    const endTouch = e => {
+      if (touch?.id !== e.pointerId) return;
+      if (e.type === 'pointerup' && !touch.moved && Math.hypot(e.clientX - touch.x, e.clientY - touch.y) <= 10 && !reducedMotion.matches) showBurst(e);
+      touch = null;
+      touchRing.hidden = true;
+    };
+    const touchListeners = { pointerdown: startTouch, pointermove: moveTouch, pointerup: endTouch, pointercancel: endTouch };
+    for (const [type, handler] of Object.entries(touchListeners)) {
+      window.addEventListener(type, handler, { passive: true, capture: true });
+    }
     window.addEventListener('pointermove',move,{passive:true});
     window.addEventListener('pointerdown',burst,{passive:true});
     document.documentElement.addEventListener('pointerleave',leave);
@@ -60,6 +88,7 @@ export default function FoodPointer(){
     return ()=>{
       cancelAnimationFrame(frame);
       leave();
+      for (const [type, handler] of Object.entries(touchListeners)) window.removeEventListener(type, handler, true);
       window.removeEventListener('pointermove',move);
       window.removeEventListener('pointerdown',burst);
       document.documentElement.removeEventListener('pointerleave',leave);
@@ -67,5 +96,5 @@ export default function FoodPointer(){
       el.parentElement?.querySelectorAll('.food-burst').forEach(ring=>ring.remove());
     };
   },[]);
-  return <div className="food-effects" aria-hidden="true"><span className="food-pointer" ref={node} hidden/></div>;
+  return <div className="food-effects" aria-hidden="true"><span className="food-pointer" ref={node} hidden/><span className="food-touch-ring" hidden/></div>;
 }

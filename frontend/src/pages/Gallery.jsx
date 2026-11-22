@@ -5,11 +5,16 @@ import { Photo, scenes } from '../components/Photo';
 import { Reveal } from '../components/Motion';
 
 const gallery = [
-  { ...scenes.brunch, title: 'Brioche French toast', group: 'Kitchen' },
-  { src: '/images/menu/brunch/avocado-feta-sourdough-toast.webp', title: 'Avocado & feta sourdough', alt: 'Fanned avocado and crumbled feta on toasted sourdough', group: 'Kitchen' },
-  { src: '/images/menu/coffee/double-espresso.webp', title: 'The double espresso', alt: 'Dark espresso with crema in a white demitasse', group: 'Café' },
+  {
+    ...scenes.brunch,
+    fullSrc: '/images/editorial/brioche-french-toast-gallery-3840.webp',
+    title: 'Brioche French toast',
+    group: 'Kitchen',
+  },
+  { src: '/images/menu/brunch/avocado-feta-sourdough-toast.webp', fullSrc: '/images/menu/brunch/avocado-feta-sourdough-toast.webp', title: 'Avocado & feta sourdough', alt: 'Fanned avocado and crumbled feta on toasted sourdough', group: 'Kitchen' },
+  { src: '/images/menu/coffee/double-espresso.webp', title: 'The double espresso', alt: 'Dark espresso with crema in a white demitasse', group: 'CafÃ©' },
   { src: '/images/menu/mains/penne-arrabbiata.webp', title: 'Penne arrabbiata', alt: 'Ridged penne with tomato, chilli and fresh basil', group: 'Kitchen' },
-  { src: '/images/menu/brunch/butter-croissant.webp', title: 'Butter croissant', alt: 'A single flaky croissant on an ivory plate', group: 'Café' },
+  { src: '/images/menu/brunch/butter-croissant.webp', title: 'Butter croissant', alt: 'A single flaky croissant on an ivory plate', group: 'CafÃ©' },
   { src: '/images/menu/desserts/classic-tiramisu.webp', title: 'Classic tiramisu', alt: 'Layered mascarpone, coffee-soaked sponge and cocoa', group: 'Kitchen' }
 ];
 
@@ -30,7 +35,7 @@ function Lightbox({ photos, index, setIndex, close }) {
     }}>
     <div className="viewer">
       <button autoFocus className="viewer-close" onClick={close} aria-label="Close gallery"><X/></button>
-      <Photo key={current.src} src={current.src} alt={current.alt} className="viewer-image" priority/>
+      <Photo key={current.src} src={current.fullSrc ?? current.src} srcSet={current.fullSrc ? '' : undefined} alt={current.alt} className="viewer-image" priority/>
       <div className="viewer-controls"><span aria-live="polite">{current.title} <small>{index + 1} / {photos.length}</small></span>
         {photos.length > 1 && <><button aria-label="Previous image" onClick={() => move(-1)}><ArrowLeft/></button>
         <button aria-label="Next image" onClick={() => move(1)}><ArrowRight/></button></>}
@@ -47,10 +52,10 @@ export function Gallery({ preview = false }) {
   return <section id={preview ? 'gallery' : undefined} className={'gallery-section wrap block ' + (preview ? 'gallery-preview' : '')}>
     <Reveal className="section-heading"><div><p className="eyebrow ruled">The gallery</p><Heading>A little <i>atmosphere.</i></Heading></div>
       {preview && <Link className="arrow-link" to="/gallery">Open gallery <ArrowUpRight size={16}/></Link>}</Reveal>
-    {!preview && <div aria-label="Gallery categories" className="gallery-filters">{['All','Kitchen','Café'].map(group =>
+    {!preview && <div aria-label="Gallery categories" className="gallery-filters">{['All','Kitchen','CafÃ©'].map(group =>
       <button aria-pressed={category === group} key={group} onClick={() => setCategory(group)}>{group}</button>)}</div>}
     <div className="gallery-wall gallery-horizontal">{photos.map((photo, i) => <button key={photo.src} className="gallery-tile" onClick={() => setIndex(i)} aria-label={'Enlarge ' + photo.title}>
-      <Photo {...photo} sizes="(max-width: 700px) 95vw, 45vw"/>
+      <Photo src={photo.src} alt={photo.alt} sizes="(max-width: 700px) 82vw, 43vw"/>
       <span>{photo.title}<Expand size={17}/></span></button>)}</div>
     {index !== null && <Lightbox photos={photos} index={index} setIndex={setIndex} close={() => setIndex(null)}/>}
   </section>;

@@ -110,6 +110,9 @@ a:hover.arrow-link svg, a:hover.hero-text-link svg,.local-strip a:hover svg {tra
 .gallery-horizontal .gallery-tile {flex:0 0 min(43vw,560px); aspect-ratio:1.22; scroll-snap-align:start}
 .gallery-tile {border: 0; padding: 0; aspect-ratio: 1; color: white}
 .gallery-tile:first-child {aspect-ratio: auto}
+.gallery-horizontal .gallery-tile {position:relative;min-height:0}
+.gallery-horizontal .gallery-tile img {position:absolute;inset:0}
+
 .gallery-tile:after {content: ''; position: absolute; inset: 50% 0 0; background: linear-gradient(transparent,#111a12bd)}
 .gallery-tile>span:last-child {position: absolute; inset: auto 16px 14px; display: flex; align-items: center; justify-content: space-between; z-index: 1; font-size: 14px}
 .lightbox {border: 0; background: transparent; color: var(--cream); padding: 15px; max-width: min(900px,100vw); max-height: 96svh}
@@ -328,7 +331,7 @@ button.bag-link,.bag-clear {border:0;background:none}
 .food-pointer[data-state="label"]::before {width:54px;height:54px;background:#ffc55c}
 .food-pointer[data-state="label"] {color:#68102b;font-size:10px}
 .food-pointer[data-state="label"]::after {content:attr(data-label);position:absolute;translate:-50% -50%}
-.food-pointer[data-state="action"]::after {content:"·";position:absolute;translate:-50% -50%;color:#68102b;font-size:18px}
+.food-pointer[data-state="action"]::after {content:"ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·";position:absolute;translate:-50% -50%;color:#68102b;font-size:18px}
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
   .food-cursor-active :is(a,button,summary,.build-plate) {cursor:none}
   .food-cursor-active :is(input,textarea,[contenteditable]) {cursor:text}
@@ -338,3 +341,17 @@ button.bag-link,.bag-clear {border:0;background:none}
 .food-pointer[data-state="action"]::after {content:attr(data-label)}
 @media(max-width:440px){.chapter-controls{gap:4px}.chapter-controls button{width:40px;height:40px}}
 .food-pointer {width:1px;height:1px;font-size:0}.food-pointer[data-state="label"] {font-size:0}.food-pointer[data-state="label"]::after {font-size:10px}
+
+/* Bring the photo edges into the hero palette without tinting the food. */
+.cinema-media {overflow:hidden;background:#731033}
+.cinema-media::after {content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(112deg,#73103342,transparent 42%),linear-gradient(0deg,#370b1d25,transparent 32%)}
+.cinema-media[data-scene="0"]::after {opacity:.35}
+.cinema-media[data-scene="1"] img {object-position:47% 78%}
+.cinema-media[data-scene="2"]::after {opacity:.8}
+.food-touch-ring {position:absolute;top:0;left:0;width:28px;height:28px;margin:-14px;border:2px solid #ffc55c;border-radius:50%;box-shadow:0 0 0 1px #68102b;pointer-events:none}
+
+.hero-title {position:relative;isolation:isolate;overflow:clip}
+.hero-ingredients i {left:82%;top:3%;width:clamp(22px,4.2vw,54px);opacity:.85}
+.hero-ingredients i:nth-child(2) {left:2%;top:68%;width:clamp(25px,4.4vw,56px);border-width:2px}
+.hero-ingredients i:nth-child(3) {left:76%;top:41%;width:clamp(16px,2.4vw,30px)}
+@media (prefers-reduced-motion:reduce) {.hero-ingredients i {animation:none}}

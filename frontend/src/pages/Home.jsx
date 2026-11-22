@@ -23,7 +23,13 @@ function heroPortrait(scene, name, largestWidth) {
     sizes: heroBrunch.sizes,
   };
 }
-const chapters = [heroBrunch, heroPortrait(scenes.table, 'kitchen', 2160), heroPortrait(scenes.coffee, 'cafe', 2880)];
+const kitchenTable = {
+  ...scenes.table,
+  src: '/images/editorial/kitchen-table-1120.webp',
+  srcSet: [640, 1120, 1600, 3840].map(width => '/images/editorial/kitchen-table-' + width + '.webp ' + width + 'w').join(', '),
+  alt: 'Spaghetti with tomato sauce on a blue plate at a set table',
+};
+const chapters = [heroBrunch, kitchenTable, heroPortrait(scenes.coffee, 'cafe', 2880)];
 function Hero() {
   const [chapter, setChapter] = useState(0);
   const media = useRef(null);
@@ -56,11 +62,14 @@ function Hero() {
   }, []);
   const scene = chapters[chapter];
   return <section id="opening" className="cinema" aria-label="Welcome to Moss and Marrow">
-    <div className="cinema-media" ref={media}><Photo key={scene.src} {...scene} sizes={scene.sizes ?? "(max-width: 800px) 100vw, 54vw"} priority/></div>
+    <div className="cinema-media" data-scene={chapter} ref={media}><Photo key={scene.src} {...scene} sizes={scene.sizes ?? "(max-width: 800px) 100vw, 54vw"} priority/></div>
     <div className="cinema-shade"/>
     <div className="wrap cinema-content">
       <p className="eyebrow hero-kicker"><span/> Café · Kitchen · Bar</p>
-      <h1 className="hero-split"><SplitText as="span">MOSS &</SplitText><SplitText as="i">MARROW.</SplitText></h1>
+      <div className="hero-title">
+        <div className="footer-food hero-ingredients" aria-hidden="true"><i/><i/><i/></div>
+        <h1 className="hero-split"><SplitText as="span">MOSS &</SplitText><SplitText as="i">MARROW.</SplitText></h1>
+      </div>
       <p className="cinema-intro">Coffee, brunch, and a kitchen menu made for taking your time.</p>
       <div className="cinema-actions"><Magnetic><Link className="button butter" to="/menu">Explore the menu <ArrowUpRight size={16}/></Link></Magnetic>
         <Magnetic><Link className="hero-text-link" to="/reservations">Reserve a table <ArrowRight size={16}/></Link></Magnetic></div>
