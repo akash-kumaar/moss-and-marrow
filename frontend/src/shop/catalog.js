@@ -129,10 +129,13 @@ export function useCatalog() {
         const response = await fetch(`${api.replace(/\/$/, '')}/menu`, { signal: controller.signal });
         if (!response.ok) throw new Error();
         const body = await response.json();
-        if (!Array.isArray(body.data)) throw new Error();
+        if (!Array.isArray(body.data) || body.data.length === 0) throw new Error();
         if (active) setItems(body.data.map(normalizeDish));
       } catch {
-        if (active) setError('Live availability is unavailable. You can still browse the menu.');
+        if (active) {
+          setItems(printedMenu);
+          setError('Live availability is unavailable. You can still browse the menu.');
+        }
       } finally {
         clearTimeout(timeout);
         if (active) setLoading(false);
