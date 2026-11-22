@@ -1,2 +1,29 @@
-import express from'express';import cors from'cors';import helmet from'helmet';import morgan from'morgan';import menu from'./routes/menu.js';import reservations from'./routes/reservations.js';import imageReview from'./routes/imageReview.js';
-const app=express();app.use(helmet());app.use(cors({origin:process.env.CLIENT_URL||'http://localhost:5173'}));app.use(express.json({limit:'100kb'}));app.use(morgan('dev'));app.get('/api/v1/health',(req,res)=>res.json({status:'ok'}));app.use('/api/v1/menu',menu);app.use('/api/v1/reservations',reservations);app.use('/api/v1/image-review',imageReview);app.use((err,req,res,next)=>{if(err.name==='ZodError')return res.status(400).json({message:'Please check the information provided.',errors:err.issues});console.error(err.message);res.status(err.status||500).json({message:err.status?err.message:'Something went wrong. Please try again.'})});export default app;
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import menu from './routes/menu.js';
+import reservations from './routes/reservations.js';
+import enquiries from './routes/enquiries.js';
+import imageReview from './routes/imageReview.js';
+
+const app = express();
+app.use(helmet());
+app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
+app.use(express.json({ limit: '100kb' }));
+app.use(morgan('dev'));
+app.get('/api/v1/health', (req, res) => res.json({ status: 'ok' }));
+app.use('/api/v1/menu', menu);
+app.use('/api/v1/reservations', reservations);
+app.use('/api/v1/enquiries', enquiries);
+app.use('/api/v1/image-review', imageReview);
+app.use((err, req, res, next) => {
+  if (err.name === 'ZodError') return res.status(400).json({
+    message: 'Please check the information provided.', errors: err.issues,
+  });
+  console.error(err.message);
+  res.status(err.status || 500).json({
+    message: err.status ? err.message : 'Something went wrong. Please try again.',
+  });
+});
+export default app;

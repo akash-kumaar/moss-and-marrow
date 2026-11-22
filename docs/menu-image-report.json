@@ -1,5 +1,6 @@
 {
-  "createdAt": "2026-11-05T23:55:21.138Z",
+  "createdAt": "2026-11-21T21:59:30.579Z",
+  "count": 52,
   "items": [
     {
       "name": "Double Espresso",
@@ -9,27 +10,63 @@
       "sourceUrl": null,
       "photographer": null,
       "format": "webp",
-      "selection": "Generated replacement: true double espresso in a ceramic demitasse"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
     },
     {
       "name": "Americano",
       "slug": "americano",
       "filename": "/images/menu/coffee/americano.webp",
-      "source": "Pixabay",
-      "sourceUrl": "https://pixabay.com/photos/cup-of-coffee-coffee-break-coffee-455423/",
-      "photographer": "stevepb",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
       "format": "webp",
-      "selection": "candidate 1 from item-specific Pixabay query"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Cortado",
+      "slug": "cortado",
+      "filename": "/images/menu/coffee/cortado.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
     },
     {
       "name": "Cappuccino",
       "slug": "cappuccino",
       "filename": "/images/menu/coffee/cappuccino.webp",
-      "source": "Pixabay",
-      "sourceUrl": "https://pixabay.com/photos/coffee-cup-caffeine-espresso-4618705/",
-      "photographer": "13758299",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
       "format": "webp",
-      "selection": "candidate 1 from item-specific Pixabay query"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Flat White",
+      "slug": "flat-white",
+      "filename": "/images/menu/coffee/flat-white.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Café Latte",
+      "slug": "caf-latte",
+      "filename": "/images/menu/coffee/caf-latte.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
     },
     {
       "name": "Spanish Latte",
@@ -39,7 +76,129 @@
       "sourceUrl": null,
       "photographer": null,
       "format": "webp",
-      "selection": "Generated replacement: layered iced Spanish latte in a clear glass"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Dark Chocolate Mocha",
+      "slug": "dark-chocolate-mocha",
+      "filename": "/images/menu/coffee/dark-chocolate-mocha.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Bengaluru Filter Kaapi",
+      "slug": "bengaluru-filter-kaapi",
+      "filename": "/images/menu/coffee/bengaluru-filter-kaapi.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Single-Origin Pour Over",
+      "slug": "single-origin-pour-over",
+      "filename": "/images/menu/coffee/single-origin-pour-over.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Iced Americano",
+      "slug": "iced-americano",
+      "filename": "/images/menu/cold-drinks/iced-americano.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Iced Latte",
+      "slug": "iced-latte",
+      "filename": "/images/menu/cold-drinks/iced-latte.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Classic Cold Brew",
+      "slug": "classic-cold-brew",
+      "filename": "/images/menu/cold-drinks/classic-cold-brew.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Vietnamese Iced Coffee",
+      "slug": "vietnamese-iced-coffee",
+      "filename": "/images/menu/cold-drinks/vietnamese-iced-coffee.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Espresso Tonic",
+      "slug": "espresso-tonic",
+      "filename": "/images/menu/cold-drinks/espresso-tonic.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Iced Matcha Latte",
+      "slug": "iced-matcha-latte",
+      "filename": "/images/menu/cold-drinks/iced-matcha-latte.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Dark Hot Chocolate",
+      "slug": "dark-hot-chocolate",
+      "filename": "/images/menu/cold-drinks/dark-hot-chocolate.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Peach Iced Tea",
+      "slug": "peach-iced-tea",
+      "filename": "/images/menu/cold-drinks/peach-iced-tea.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
     },
     {
       "name": "Butter Croissant",
@@ -49,37 +208,107 @@
       "sourceUrl": null,
       "photographer": null,
       "format": "webp",
-      "selection": "Generated replacement: single butter croissant on ceramic plate"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Almond Croissant",
+      "slug": "almond-croissant",
+      "filename": "/images/menu/brunch/almond-croissant.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
     },
     {
       "name": "Buttermilk Berry Pancakes",
       "slug": "buttermilk-berry-pancakes",
       "filename": "/images/menu/brunch/buttermilk-berry-pancakes.webp",
-      "source": "Pixabay",
-      "sourceUrl": "https://pixabay.com/photos/pancakes-schaumomelette-omelette-1984716/",
-      "photographer": "RitaE",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
       "format": "webp",
-      "selection": "candidate 1 from item-specific Pixabay query"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
     },
     {
-      "name": "Avocado Feta Sourdough Toast",
+      "name": "Brioche French Toast",
+      "slug": "brioche-french-toast",
+      "filename": "/images/menu/brunch/brioche-french-toast.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Avocado & Feta Sourdough Toast",
       "slug": "avocado-feta-sourdough-toast",
       "filename": "/images/menu/brunch/avocado-feta-sourdough-toast.webp",
-      "source": "Pixabay",
-      "sourceUrl": "https://pixabay.com/photos/smashed-avocado-on-toast-avocado-4488463/",
-      "photographer": "pen_ash",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
       "format": "webp",
-      "selection": "candidate 1 from item-specific Pixabay query"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
     },
     {
       "name": "Classic Eggs Benedict",
       "slug": "classic-eggs-benedict",
       "filename": "/images/menu/brunch/classic-eggs-benedict.webp",
-      "source": "Pixabay",
-      "sourceUrl": "https://pixabay.com/photos/lobster-brunch-benedict-fork-food-1615616/",
-      "photographer": "Angelica_Online",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
       "format": "webp",
-      "selection": "candidate 1 from item-specific Pixabay query"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Mediterranean Shakshuka",
+      "slug": "mediterranean-shakshuka",
+      "filename": "/images/menu/brunch/mediterranean-shakshuka.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Mushroom & Cheese Omelette",
+      "slug": "mushroom-cheese-omelette",
+      "filename": "/images/menu/brunch/mushroom-cheese-omelette.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Garlic & Herb Bread",
+      "slug": "garlic-herb-bread",
+      "filename": "/images/menu/starters/garlic-herb-bread.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Tomato & Mozzarella Bruschetta",
+      "slug": "tomato-mozzarella-bruschetta",
+      "filename": "/images/menu/starters/tomato-mozzarella-bruschetta.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
     },
     {
       "name": "Truffle Parmesan Fries",
@@ -89,59 +318,525 @@
       "sourceUrl": null,
       "photographer": null,
       "format": "webp",
-      "selection": "Generated replacement: truffle parmesan fries in dark ceramic bowl"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Crispy Chicken Tenders",
+      "slug": "crispy-chicken-tenders",
+      "filename": "/images/menu/starters/crispy-chicken-tenders.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Classic Tomato Basil Soup",
+      "slug": "classic-tomato-basil-soup",
+      "filename": "/images/menu/soups/classic-tomato-basil-soup.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Creamy Mushroom & Thyme Soup",
+      "slug": "creamy-mushroom-thyme-soup",
+      "filename": "/images/menu/soups/creamy-mushroom-thyme-soup.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Classic Caesar Salad",
+      "slug": "classic-caesar-salad",
+      "filename": "/images/menu/salads/classic-caesar-salad.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Grilled Chicken Caesar Salad",
+      "slug": "grilled-chicken-caesar-salad",
+      "filename": "/images/menu/salads/grilled-chicken-caesar-salad.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Roasted Beetroot & Feta Salad",
+      "slug": "roasted-beetroot-feta-salad",
+      "filename": "/images/menu/salads/roasted-beetroot-feta-salad.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Grilled Vegetable Pesto Panini",
+      "slug": "grilled-vegetable-pesto-panini",
+      "filename": "/images/menu/sandwiches/grilled-vegetable-pesto-panini.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Chicken Pesto Ciabatta",
+      "slug": "chicken-pesto-ciabatta",
+      "filename": "/images/menu/sandwiches/chicken-pesto-ciabatta.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
     },
     {
       "name": "Classic House Cheeseburger",
       "slug": "classic-house-cheeseburger",
       "filename": "/images/menu/burgers/classic-house-cheeseburger.webp",
-      "source": "Pixabay",
-      "sourceUrl": "https://pixabay.com/photos/burger-cheeseburger-fast-food-7221436/",
-      "photographer": "RitaE",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
       "format": "webp",
-      "selection": "candidate 1 from item-specific Pixabay query"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Crispy Chicken Burger",
+      "slug": "crispy-chicken-burger",
+      "filename": "/images/menu/burgers/crispy-chicken-burger.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
     },
     {
       "name": "Penne Arrabbiata",
       "slug": "penne-arrabbiata",
       "filename": "/images/menu/mains/penne-arrabbiata.webp",
-      "source": "Pixabay",
-      "sourceUrl": "https://pixabay.com/photos/tomatoes-pasta-food-ingredients-1114066/",
-      "photographer": "diapicard",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
       "format": "webp",
-      "selection": "candidate 1 from item-specific Pixabay query"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Creamy Mushroom Alfredo",
+      "slug": "creamy-mushroom-alfredo",
+      "filename": "/images/menu/mains/creamy-mushroom-alfredo.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
     },
     {
       "name": "Wild Mushroom Risotto",
       "slug": "wild-mushroom-risotto",
       "filename": "/images/menu/mains/wild-mushroom-risotto.webp",
-      "source": "Pixabay",
-      "sourceUrl": "https://pixabay.com/photos/food-risotto-flat-lay-dish-rice-5981246/",
-      "photographer": "romjanaly",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
       "format": "webp",
-      "selection": "candidate 1 from item-specific Pixabay query"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Vegetable Lasagna",
+      "slug": "vegetable-lasagna",
+      "filename": "/images/menu/mains/vegetable-lasagna.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Grilled Chicken Herb Steak",
+      "slug": "grilled-chicken-herb-steak",
+      "filename": "/images/menu/mains/grilled-chicken-herb-steak.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Classic Fish & Chips",
+      "slug": "classic-fish-chips",
+      "filename": "/images/menu/mains/classic-fish-chips.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Roasted Pumpkin & Sage Risotto",
+      "slug": "roasted-pumpkin-sage-risotto",
+      "filename": "/images/menu/mains/roasted-pumpkin-sage-risotto.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Lemon Herb Roast Chicken",
+      "slug": "lemon-herb-roast-chicken",
+      "filename": "/images/menu/mains/lemon-herb-roast-chicken.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Baked Tomato & Mozzarella",
+      "slug": "baked-tomato-mozzarella",
+      "filename": "/images/menu/mains/baked-tomato-mozzarella.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
     },
     {
       "name": "Classic Tiramisu",
       "slug": "classic-tiramisu",
       "filename": "/images/menu/desserts/classic-tiramisu.webp",
-      "source": "Pixabay",
-      "sourceUrl": "https://pixabay.com/photos/tiramisu-dessert-food-sweet-199281/",
-      "photographer": "Birgit_H",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
       "format": "webp",
-      "selection": "candidate 1 from item-specific Pixabay query"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Warm Chocolate Brownie & Vanilla Ice Cream",
+      "slug": "warm-chocolate-brownie-vanilla-ice-cream",
+      "filename": "/images/menu/desserts/warm-chocolate-brownie-vanilla-ice-cream.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
     },
     {
       "name": "Basque Cheesecake",
       "slug": "basque-cheesecake",
       "filename": "/images/menu/desserts/basque-cheesecake.webp",
-      "source": "Pixabay",
-      "sourceUrl": "https://pixabay.com/photos/cake-cheese-cake-chocolate-food-4020975/",
-      "photographer": "orange31",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
       "format": "webp",
-      "selection": "candidate 1 from item-specific Pixabay query"
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Lemon Tart",
+      "slug": "lemon-tart",
+      "filename": "/images/menu/desserts/lemon-tart.webp",
+      "source": "OpenAI image generation",
+      "sourceUrl": null,
+      "photographer": null,
+      "format": "webp",
+      "imageIsIllustrative": true,
+      "status": "generated, cropped, optimized, unique product image"
+    }
+  ],
+  "checklist": [
+    {
+      "name": "Double Espresso",
+      "imagePath": "/images/menu/coffee/double-espresso.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Americano",
+      "imagePath": "/images/menu/coffee/americano.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Cortado",
+      "imagePath": "/images/menu/coffee/cortado.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Cappuccino",
+      "imagePath": "/images/menu/coffee/cappuccino.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Flat White",
+      "imagePath": "/images/menu/coffee/flat-white.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Café Latte",
+      "imagePath": "/images/menu/coffee/caf-latte.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Spanish Latte",
+      "imagePath": "/images/menu/coffee/spanish-latte.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Dark Chocolate Mocha",
+      "imagePath": "/images/menu/coffee/dark-chocolate-mocha.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Bengaluru Filter Kaapi",
+      "imagePath": "/images/menu/coffee/bengaluru-filter-kaapi.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Single-Origin Pour Over",
+      "imagePath": "/images/menu/coffee/single-origin-pour-over.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Iced Americano",
+      "imagePath": "/images/menu/cold-drinks/iced-americano.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Iced Latte",
+      "imagePath": "/images/menu/cold-drinks/iced-latte.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Classic Cold Brew",
+      "imagePath": "/images/menu/cold-drinks/classic-cold-brew.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Vietnamese Iced Coffee",
+      "imagePath": "/images/menu/cold-drinks/vietnamese-iced-coffee.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Espresso Tonic",
+      "imagePath": "/images/menu/cold-drinks/espresso-tonic.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Iced Matcha Latte",
+      "imagePath": "/images/menu/cold-drinks/iced-matcha-latte.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Dark Hot Chocolate",
+      "imagePath": "/images/menu/cold-drinks/dark-hot-chocolate.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Peach Iced Tea",
+      "imagePath": "/images/menu/cold-drinks/peach-iced-tea.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Butter Croissant",
+      "imagePath": "/images/menu/brunch/butter-croissant.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Almond Croissant",
+      "imagePath": "/images/menu/brunch/almond-croissant.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Buttermilk Berry Pancakes",
+      "imagePath": "/images/menu/brunch/buttermilk-berry-pancakes.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Brioche French Toast",
+      "imagePath": "/images/menu/brunch/brioche-french-toast.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Avocado & Feta Sourdough Toast",
+      "imagePath": "/images/menu/brunch/avocado-feta-sourdough-toast.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Classic Eggs Benedict",
+      "imagePath": "/images/menu/brunch/classic-eggs-benedict.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Mediterranean Shakshuka",
+      "imagePath": "/images/menu/brunch/mediterranean-shakshuka.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Mushroom & Cheese Omelette",
+      "imagePath": "/images/menu/brunch/mushroom-cheese-omelette.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Garlic & Herb Bread",
+      "imagePath": "/images/menu/starters/garlic-herb-bread.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Tomato & Mozzarella Bruschetta",
+      "imagePath": "/images/menu/starters/tomato-mozzarella-bruschetta.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Truffle Parmesan Fries",
+      "imagePath": "/images/menu/starters/truffle-parmesan-fries.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Crispy Chicken Tenders",
+      "imagePath": "/images/menu/starters/crispy-chicken-tenders.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Classic Tomato Basil Soup",
+      "imagePath": "/images/menu/soups/classic-tomato-basil-soup.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Creamy Mushroom & Thyme Soup",
+      "imagePath": "/images/menu/soups/creamy-mushroom-thyme-soup.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Classic Caesar Salad",
+      "imagePath": "/images/menu/salads/classic-caesar-salad.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Grilled Chicken Caesar Salad",
+      "imagePath": "/images/menu/salads/grilled-chicken-caesar-salad.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Roasted Beetroot & Feta Salad",
+      "imagePath": "/images/menu/salads/roasted-beetroot-feta-salad.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Grilled Vegetable Pesto Panini",
+      "imagePath": "/images/menu/sandwiches/grilled-vegetable-pesto-panini.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Chicken Pesto Ciabatta",
+      "imagePath": "/images/menu/sandwiches/chicken-pesto-ciabatta.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Classic House Cheeseburger",
+      "imagePath": "/images/menu/burgers/classic-house-cheeseburger.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Crispy Chicken Burger",
+      "imagePath": "/images/menu/burgers/crispy-chicken-burger.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Penne Arrabbiata",
+      "imagePath": "/images/menu/mains/penne-arrabbiata.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Creamy Mushroom Alfredo",
+      "imagePath": "/images/menu/mains/creamy-mushroom-alfredo.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Wild Mushroom Risotto",
+      "imagePath": "/images/menu/mains/wild-mushroom-risotto.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Vegetable Lasagna",
+      "imagePath": "/images/menu/mains/vegetable-lasagna.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Grilled Chicken Herb Steak",
+      "imagePath": "/images/menu/mains/grilled-chicken-herb-steak.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Classic Fish & Chips",
+      "imagePath": "/images/menu/mains/classic-fish-chips.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Roasted Pumpkin & Sage Risotto",
+      "imagePath": "/images/menu/mains/roasted-pumpkin-sage-risotto.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Lemon Herb Roast Chicken",
+      "imagePath": "/images/menu/mains/lemon-herb-roast-chicken.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Baked Tomato & Mozzarella",
+      "imagePath": "/images/menu/mains/baked-tomato-mozzarella.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Classic Tiramisu",
+      "imagePath": "/images/menu/desserts/classic-tiramisu.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Warm Chocolate Brownie & Vanilla Ice Cream",
+      "imagePath": "/images/menu/desserts/warm-chocolate-brownie-vanilla-ice-cream.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Basque Cheesecake",
+      "imagePath": "/images/menu/desserts/basque-cheesecake.webp",
+      "status": "generated, cropped, optimized, unique product image"
+    },
+    {
+      "name": "Lemon Tart",
+      "imagePath": "/images/menu/desserts/lemon-tart.webp",
+      "status": "generated, cropped, optimized, unique product image"
     }
   ],
   "missing": [],
-  "reuse": []
+  "duplicates": []
 }
