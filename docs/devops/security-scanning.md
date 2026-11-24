@@ -1,5 +1,9 @@
 # Security Scanning — MOSS & MARROW
 
+## Release enforcement
+
+Container Release calls security.yml at the same revision. Both exact ECR digest scans use exit-code 1 on HIGH/CRITICAL, including unfixed findings. Scanner errors also fail the release. A successful verified-release manifest is required by CD. An artifact or SHA tag from a failed release does not authorize deployment. Independent checks on other commits are not substitutes. CodeQL alerts are separate from the Container Release gate.
+
 ## Security Tool Overview
 
 | Tool | Type | Trigger | Blocking |

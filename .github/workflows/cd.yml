@@ -5,7 +5,7 @@
 # AWS Systems Manager Run Command.
 #
 # Flow:
-#   1. Trigger on successful Container Release or manual dispatch
+#   1. Trigger on successful main Container Release
 #   2. Authenticate to AWS via GitHub OIDC
 #   3. Resolve immutable image digests from ECR
 #   4. Send SSM Run Command with validated digests
@@ -19,13 +19,6 @@ on:
     workflows: ["Container Release"]
     branches: [main]
     types: [completed]
-  workflow_dispatch:
-    inputs:
-      image_sha:
-        description: "Git SHA of the published images to deploy (defaults to latest main commit)"
-        required: false
-        default: ""
-
 concurrency:
   group: cd-${{ github.ref }}
   cancel-in-progress: false
@@ -38,13 +31,12 @@ jobs:
     name: Deploy to EC2
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
 
     permissions:
       contents: read
       id-token: write
+      actions: read
 
     env:
       AWS_REGION: ap-south-1
@@ -56,11 +48,13 @@ jobs:
       - name: Resolve deployment SHA
         id: resolve-sha
         run: |
-          if [ -n "${{ inputs.image_sha }}" ]; then
-            echo "sha=${{ inputs.image_sha }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "sha=${{ github.event.workflow_run.head_sha || github.sha }}" >> "$GITHUB_OUTPUT"
-          fi
+          echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Read verified release from triggering run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh run download "${{ github.event.workflow_run.id }}" --name "verified-release-${{ github.event.workflow_run.run_attempt }}"
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
@@ -104,15 +98,25 @@ jobs:
           echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
           echo "Backend digest: $DIGEST"
 
+      - name: Check release identity and AWS destination
+        id: verified
+        run: |
+          mapfile -t release < verified-release.txt
+          [[ ${#release[@]} == 4 && ${release[0]} == "${{ steps.resolve-sha.outputs.sha }}" ]]
+          [[ ${release[1]} == "${{ steps.frontend-digest.outputs.digest }}" && ${release[2]} == "${{ steps.backend-digest.outputs.digest }}" ]]
+          [[ ${release[3]} =~ ^[a-f0-9]{64}$ ]]
+          echo "script=${release[3]}" >> "$GITHUB_OUTPUT"
+          [[ "$AWS_REGION" == ap-south-1 && "$(aws sts get-caller-identity --query Account --output text)" == 874940900689 ]]
+
       - name: Get EC2 instance ID
         id: instance
         run: |
           INSTANCE_ID=$(aws ec2 describe-instances \
             --region "${{ env.AWS_REGION }}" \
             --filters "Name=tag:Name,Values=moss-marrow-app" "Name=instance-state-name,Values=running" \
-            --query 'Reservations[0].Instances[0].InstanceId' \
-            --output text)
-          if [ -z "$INSTANCE_ID" ] || [ "$INSTANCE_ID" = "None" ]; then
+            --query 'Reservations[].Instances[].InstanceId' \
+            --output json | python3 -c 'import json,sys; ids=json.load(sys.stdin); sys.exit("Expected exactly one running production instance") if len(ids)!=1 else print(ids[0])')
+          if ! [[ "$INSTANCE_ID" =~ ^i-([a-f0-9]{8}|[a-f0-9]{17})$ ]]; then
             echo "::error::No running EC2 instance found with tag Name=moss-marrow-app"
             exit 1
           fi
@@ -126,7 +130,7 @@ jobs:
             --region "${{ env.AWS_REGION }}" \
             --document-name "${{ env.SSM_DOCUMENT }}" \
             --instance-ids "${{ steps.instance.outputs.instance_id }}" \
-            --parameters "frontendDigest=${{ steps.frontend-digest.outputs.digest }},backendDigest=${{ steps.backend-digest.outputs.digest }}" \
+            --parameters "scriptSha256=${{ steps.verified.outputs.script }},frontendDigest=${{ steps.frontend-digest.outputs.digest }},backendDigest=${{ steps.backend-digest.outputs.digest }}" \
             --timeout-seconds 300 \
             --query 'Command.CommandId' \
             --output text)
@@ -204,7 +208,6 @@ jobs:
           done
 
       - name: Publish deployment summary
-        if: always()
         run: |
           echo "## 🚀 EC2 Deployment Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"

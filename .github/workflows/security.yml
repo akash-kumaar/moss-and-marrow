@@ -16,7 +16,11 @@ name: Security
 
 on:
   push:
-    branches: [main]
+    branches: [feature/moss-marrow-complete-rebuild]
+  workflow_call:
+    secrets:
+      SONAR_TOKEN:
+        required: false
   pull_request:
     branches: [main]
   schedule:
@@ -32,6 +36,30 @@ permissions:
   contents: read
 
 jobs:
+  release-regressions:
+    name: Reservation and deployment regression tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      mongo:
+        image: mongo:7.0
+        ports:
+          - 27017/tcp
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af
+        with:
+          node-version: "22"
+      - run: npm ci --omit=dev && npm test
+        working-directory: backend
+        env:
+          TEST_MONGO_PORT: ${{ job.services.mongo.ports['27017'] }}
+      - run: bash scripts/test-deploy.sh
+      - run: |
+          python3 -m venv "$RUNNER_TEMP/release-test"
+          "$RUNNER_TEMP/release-test/bin/pip" install PyYAML==6.0.3
+          "$RUNNER_TEMP/release-test/bin/python" scripts/test-release.py
+
   # ---------------------------------------------------------------------------
   # JOB: gitleaks
   # Scans the repository and recent Git history for accidentally committed
@@ -149,7 +177,7 @@ jobs:
           scan-ref: ${{ matrix.path }}
           format: "table"
           severity: "CRITICAL,HIGH"
-          ignore-unfixed: true
+          ignore-unfixed: false
 
       - name: Run Trivy filesystem scan (SARIF report)
         uses: aquasecurity/trivy-action@v0.36.0
@@ -163,7 +191,7 @@ jobs:
           # blocking SARIF scan to the same threshold as the table scan.
           limit-severities-for-sarif: true
           exit-code: "1"
-          ignore-unfixed: true
+          ignore-unfixed: false
 
       - name: Upload SARIF to GitHub Security
         # Always run this step so results appear even when Trivy exits non-zero.
@@ -182,6 +210,7 @@ jobs:
   # Runs on pushes, pull requests, daily schedule, and manual dispatch.
   # ---------------------------------------------------------------------------
   trivy-docker:
+    if: github.workflow != 'Container Release'
     name: Trivy Container Scan — ${{ matrix.app }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -229,7 +258,7 @@ jobs:
           image-ref: moss-marrow-scan/${{ matrix.app }}:${{ github.sha }}
           format: "table"
           severity: "CRITICAL,HIGH"
-          ignore-unfixed: true
+          ignore-unfixed: false
 
       - name: Run Trivy container image scan (SARIF report)
         uses: aquasecurity/trivy-action@v0.36.0
@@ -243,7 +272,7 @@ jobs:
           # blocking SARIF scan to the same threshold as the table scan.
           limit-severities-for-sarif: true
           exit-code: "1"
-          ignore-unfixed: true
+          ignore-unfixed: false
 
       - name: Upload SARIF to GitHub Security
         if: always()

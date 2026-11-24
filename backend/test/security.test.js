@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { once } from 'node:events';
 import mongoose from 'mongoose';
 import app from '../src/app.js';
+import { prepareReservationIndexes } from '../src/reservationIndexes.js';
 import Reservation from '../src/models/Reservation.js';
 import { limitRequests, trustFrontend } from '../src/security.js';
 import { botConfig, verifyReservationToken } from '../src/bot.js';
@@ -58,7 +59,7 @@ test('actual MongoDB indexes enforce retries and concurrent seating capacity', {
   const db='moss_test_'+Date.now();
   await mongoose.connect('mongodb://127.0.0.1:'+port+'/'+db);
   t.after(async()=>{await mongoose.disconnect();});
-  await Reservation.init();
+  await prepareReservationIndexes();
   const {default: isolatedApp} = await import('../src/app.js?integration');
   const server=isolatedApp.listen(0,'127.0.0.1');await once(server,'listening');
   t.after(()=>new Promise(resolve=>server.close(resolve)));
@@ -78,4 +79,29 @@ test('actual MongoDB indexes enforce retries and concurrent seating capacity', {
   await Reservation.create(record);
   await assert.rejects(Reservation.create({...record,reference:'MM-SECOND',requestKey:'other'}),{code:11000});
   assert.equal(await Reservation.countDocuments(),3);
+  // Fill the remaining slots and exercise the handler at capacity.
+  for (let i=2; i<19; i++) await Reservation.create({...record,seatSlot:i,reference:'MM-SLOT-'+i,requestKey:'slot-'+i});
+  assert.equal((await request(booking,'another-reservation-0003')).status,409);
+
+  async function fixture(name, docs) {
+    const model=mongoose.model(name,Reservation.schema,name);
+    await model.collection.insertMany(docs);
+    return model;
+  }
+  const legacy=await fixture('legacy',[{reference:'one'},{reference:'two'},{reference:'three',requestKey:null}]);
+  await prepareReservationIndexes(legacy);
+  assert.equal(await legacy.countDocuments(),3);
+  for(const [name,docs,reason] of [
+    ['nulls',[{reference:'a',requestKey:null},{reference:'b',requestKey:null}],/duplicate/],
+    ['refs',[{reference:'a'},{reference:'a'}],/duplicate/],
+    ['slots',[{...record,requestKey:'A'},{...record,reference:'B',requestKey:'B'}],/duplicate/],
+    ['types',[{reference:'a',seatSlot:'3'}],/incompatible/],
+  ]) {
+    const model=await fixture(name,docs);
+    await assert.rejects(prepareReservationIndexes(model),reason);
+    assert.equal(await model.countDocuments(),docs.length);
+  }
+  const conflict=await fixture('conflict',[{reference:'a'}]);
+  await conflict.collection.createIndex({reference:1},{unique:false});
+  await assert.rejects(prepareReservationIndexes(conflict),/conflicting/);
 });

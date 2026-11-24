@@ -14,6 +14,11 @@ resource "aws_ssm_document" "deploy" {
     schemaVersion = "2.2"
     description   = "Deploy MOSS & MARROW containers via Docker Compose"
     parameters = {
+      scriptSha256 = {
+        type = "String"
+        allowedPattern = "^[a-f0-9]{64}$"
+        interpolationType = "ENV_VAR"
+      }
       frontendDigest = {
         type              = "String"
         description       = "Frontend image digest (sha256:...)"
@@ -32,7 +37,7 @@ resource "aws_ssm_document" "deploy" {
         action = "aws:runShellScript"
         name   = "deploy"
         inputs = {
-          runCommand       = ["/opt/deploy.sh"]
+          runCommand       = ["set -eu", "printf '%s  /opt/deploy.sh\\n' \"$SSM_scriptSha256\" | sha256sum -c -", "exec /opt/deploy.sh"]
           timeoutSeconds   = "300"
           workingDirectory = "/opt"
         }

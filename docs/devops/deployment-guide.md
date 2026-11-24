@@ -1,15 +1,21 @@
-# Deployment Guide — MOSS & MARROW
+# EC2 production deployment and recovery
 
-## Deployment Overview
+Production runs Docker Compose on a single EC2 instance in ap-south-1. Container Release builds Git-SHA-tagged images, checks exact ECR digests and publishes verified-release.txt. CD accepts only a successful main release run, downloads its attempt-specific artifact, compares the SHA and digests against ECR and requires exactly one running instance tagged moss-marrow-app in the expected account. SSM permissions restrict SendCommand to the existing document and instance. CD polls that specific command and instance. Manual SHA dispatch is disabled.
 
-MOSS & MARROW uses a "build once, deploy digest" model:
+## Before authorizing rollout
 
-1. `container-release.yml` builds and pushes images to ECR with an immutable SHA tag.
-2. `cd.yml` retrieves the exact image digest from ECR and deploys it to EKS.
-3. The deployed image is verified (Cosign signature check) before kubectl apply.
-4. Rollout is monitored; failed deployments roll back automatically.
+1. Use an authenticated operator session with scoped STS identity, EC2 describe, ECR describe, SSM instance/invocation read and approved Session Manager access. Confirm region, account, instance, current public address, disk space, database health, container health and both running repo@digest references.
+2. Verify the deployed SSM document accepts scriptSha256 and checks the installed root-owned /opt/deploy.sh against the release checksum. Provision these two updates under separate change approval before the first rollout. Deploy scripts must have LF endings and mode 0700. Changing cloud-init user data can cause Terraform to propose replacing EC2. Review the plan and reject any instance replacement. This repository change alone does not install a host script.
+3. Validate /opt/current_digests.env contains PREV_FRONTEND_DIGEST and PREV_BACKEND_DIGEST matching running containers and cached images. First bootstrap and recovery without this record require a separate operator procedure. Verify Secrets Manager access to the existing MONGODB_URI and JWT_ACCESS_SECRET entries. Optional Turnstile configuration and per-process rate limit defaults are in docs/api-hardening.md.
+4. Verify an approved encrypted, access-controlled backup destination, free space and a consistency strategy. For standalone MongoDB coordinate a quiet write window, capture counts and indexes, stream mongodump --archive --gzip for the actual database to a private archive (umask 077), and verify its SHA-256 checksum. Restore via mongorestore into a fresh isolated MongoDB 7 instance. Compare counts and index definitions and run the candidate index initializer there. Never test a restore against production.
+5. Review reservation reference uniqueness, requestKey presence/type/null duplicates, slot types and duplicate active branch/date/time/slot values. Initialization fails closed on incompatible data/index definitions. Legacy records missing keys are preserved. Investigate conflicts without rewriting customer records.
+6. Require green security checks and explicit maintenance-window approval. Compare release and running digests after CD. Read-only probes: homepage, menu, reservation form, configuration and readiness. Confirm monitoring ingestion and reservation counts. Keep write/abuse tests isolated.
 
----
+## Failure handling
+
+Before replacement, failed preflight, registry pulls or secret lookup leave containers running. After replacement starts the script restores captured application image references and checks both identities, backend container health, the homepage and the proxied health response. Compose targets backend and frontend with --no-deps and --pull never. MongoDB and its named volume are outside replacement and rollback. New indexes and reservations persist. The original deployment exits unsuccessfully even after verified rollback.
+
+If rollback verification fails, stop deployment attempts and inspect the affected host using SSM. Never reset the database. For an approved manual application recovery use the recorded known-good immutable digests and the approved on-host procedure. Do not treat a green backend health response alone as confirmation that the frontend was restored. A host crash, hard kill, exhausted disk, missing image or failed Docker daemon can still require operator recovery. The SSM time budget must cover pull, replacement and rollback; verify available time and registry responsiveness before rollout.
 
 ## Local Development (Docker Compose)
 
@@ -33,131 +39,6 @@ docker compose logs -f backend
 # Stop (data preserved)
 docker compose down
 
-# Stop and destroy all data
-docker compose down -v   # ⚠️ DESTRUCTIVE — deletes MongoDB volume
+
 ```
-
----
-
-## Triggering a Production Deployment
-
-### Automatic (recommended)
-
-Push to `main`. The pipeline runs in this order:
-1. CI validates the build.
-2. Security scans run in parallel.
-3. `container-release.yml` publishes images to ECR.
-4. `cd.yml` triggers automatically and waits for reviewer approval.
-
-### Manual
-
-1. Go to **Actions → CD — Deploy to Kubernetes → Run workflow**
-2. Select environment: `staging` or `production`
-3. Optionally enter a specific Git SHA to deploy
-4. Enter a reason for the deployment
-5. Click **Run workflow**
-
-For `production`, a reviewer must approve the deployment in the **Environments** approval gate.
-
----
-
-## Kubernetes Prerequisites Checklist
-
-Before the first EKS deployment:
-
-- [ ] EKS cluster created (`vars.EKS_CLUSTER_NAME`)
-- [ ] ECR repositories created (frontend + backend)
-- [ ] AWS OIDC provider created (see `aws-oidc-setup.md`)
-- [ ] IAM roles created with correct trust policies
-- [ ] GitHub secrets configured (see `github-actions-setup.md`)
-- [ ] GitHub variables configured
-- [ ] GitHub Environment `production` created with required reviewers
-- [ ] `kubectl apply -f k8s/namespace.yaml` run once to create the namespace
-- [ ] `k8s/config/configmap.yaml` updated with the correct `CLIENT_URL`
-- [ ] MongoDB Atlas cluster provisioned (or MongoDB available externally)
-- [ ] `secrets.MONGODB_URI` set to the production connection string
-
----
-
-## Kubernetes Nginx Note
-
-When deployed to Kubernetes, the Nginx proxy_pass in `frontend/nginx.conf` currently points to `http://backend:5000`. In Kubernetes, services are resolved by DNS, not by Docker Compose service names.
-
-**Update required before EKS deployment:**
-
-Change `frontend/nginx.conf` line 18:
-```nginx
-# Docker Compose (current)
-proxy_pass http://backend:5000;
-
-# Kubernetes (required for EKS)
-proxy_pass http://moss-marrow-backend.moss-marrow.svc.cluster.local:5000;
-```
-
-This change must be made in a separate branch and merged to main before the first EKS deployment.
-
----
-
-## Monitoring a Rollout
-
-```bash
-# Watch rollout progress
-kubectl rollout status deployment/moss-marrow-backend -n moss-marrow
-kubectl rollout status deployment/moss-marrow-frontend -n moss-marrow
-
-# View pod status
-kubectl get pods -n moss-marrow
-
-# View pod logs
-kubectl logs -n moss-marrow -l app.kubernetes.io/component=backend --tail=100
-
-# View events (useful for debugging scheduling/image pull issues)
-kubectl get events -n moss-marrow --sort-by='.metadata.creationTimestamp'
-```
-
----
-
-## Manual Rollback
-
-If the automatic rollback in CD fails or you need to roll back independently:
-
-```bash
-# Roll back to the previous revision
-kubectl rollout undo deployment/moss-marrow-backend -n moss-marrow
-kubectl rollout undo deployment/moss-marrow-frontend -n moss-marrow
-
-# Verify rollback succeeded
-kubectl rollout status deployment/moss-marrow-backend -n moss-marrow
-
-# View rollout history
-kubectl rollout history deployment/moss-marrow-backend -n moss-marrow
-```
-
----
-
-## Investigating CI/CD Failures
-
-### CI failure (build or syntax error)
-1. Go to the failed workflow run in **Actions**
-2. Click the failing job
-3. Expand the failing step
-4. Address the error in `frontend/` or `backend/`
-
-### Security scan failure (Trivy or npm audit)
-1. Go to **Security → Code scanning alerts**
-2. Review the affected package
-3. Update the dependency: `npm audit fix --omit=dev`
-4. If unfixable, assess risk and document a temporary exception
-
-### Container release failure (ECR push)
-1. Check AWS OIDC: does the IAM role trust policy match the repository?
-2. Check ECR: does the repository exist in the configured region?
-3. Check `vars.AWS_REGION` and `vars.ECR_REPOSITORY_*` values
-
-### CD failure (EKS deployment)
-1. Check `kubectl get events -n moss-marrow`
-2. Check if the image digest exists in ECR
-3. Check if `moss-marrow-backend-secret` Kubernetes secret was created
-4. Confirm EKS node groups have sufficient capacity
-5. Use `kubectl describe pod <pod-name> -n moss-marrow` for detailed errors
 
