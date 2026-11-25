@@ -3,6 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowRight, Check } from 'lucide-react';
 import { branches, findBranch } from './branches.js';
 
+import ReservationChallenge from './ReservationChallenge';
+
 const api = import.meta.env.VITE_API_URL || '/api/v1';
 const seatings = ['12:30 PM', '1:30 PM', '7:30 PM', '8:30 PM'];
 const localDate = () => new Intl.DateTimeFormat('en-CA', {
@@ -50,20 +52,27 @@ function SubmitForm({ endpoint, payloadFrom, action, children, success }) {
   const [phase, setPhase] = useState('editing');
   const [error, setError] = useState('');
   const [record, setRecord] = useState(null);
+  const attempt = useRef(null);
+  const [challengeReset, resetChallenge] = useState(0);
   const inFlight = useRef(false);
   async function submit(event) {
     event.preventDefault();
     if (inFlight.current) return;
     const values = Object.fromEntries(new FormData(event.currentTarget));
     const payload = payloadFrom(values);
+    const body = JSON.stringify(payload);
+    if (endpoint === '/reservations' && attempt.current?.body !== body) {
+      const bytes = crypto.getRandomValues(new Uint8Array(16));
+      attempt.current = { body, key: Array.from(bytes, b => b.toString(16).padStart(2,'0')).join('') };
+    }
     inFlight.current = true;
     setPhase('sending');
     setError('');
     try {
       const response = await fetch(api + endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json', ...(endpoint === '/reservations' && { 'Idempotency-Key': attempt.current.key }) },
+        body: values['cf-turnstile-response'] ? JSON.stringify({...payload, turnstileToken: values['cf-turnstile-response']}) : body,
       });
       const result = await response.json().catch(() => null);
       if (!response.ok) throw new Error(result?.message || 'The restaurant service is unavailable. Please try again.');
@@ -71,6 +80,7 @@ function SubmitForm({ endpoint, payloadFrom, action, children, success }) {
       setRecord({ ...payload, ...result.data });
       setPhase('done');
     } catch (failure) {
+      resetChallenge(count => count + 1);
       setError(failure instanceof TypeError ? 'We couldn’t reach the restaurant. Check your connection and try again.' : failure.message);
       setPhase('editing');
     } finally {
@@ -87,6 +97,7 @@ function SubmitForm({ endpoint, payloadFrom, action, children, success }) {
   );
   return <form className="visit-form" onSubmit={submit} aria-busy={phase === 'sending'}>
     {children}
+    {endpoint === '/reservations' && <ReservationChallenge api={api} reset={challengeReset}/>}
     {error && <p className="visit-error" role="alert">{error}</p>}
     <button type="submit" className="button" disabled={phase === 'sending'}>
       {phase === 'sending' ? 'Sending…' : action} <ArrowRight size={17} />

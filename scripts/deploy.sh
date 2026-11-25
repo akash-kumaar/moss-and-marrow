@@ -13,19 +13,36 @@ readonly DEPLOY_DIR="/opt"
 readonly COMPOSE_FILE="${DEPLOY_DIR}/docker-compose.deploy.yml"
 readonly DIGESTS_FILE="${DEPLOY_DIR}/current_digests.env"
 readonly PREVIOUS_DIGESTS_FILE="${DEPLOY_DIR}/previous_digests.env"
-readonly ENV_FILE="/tmp/.moss_marrow_env.$$"
+umask 077
 readonly AWS_REGION="ap-south-1"
 readonly ECR_REGISTRY="874940900689.dkr.ecr.${AWS_REGION}.amazonaws.com"
 
-# --- Guaranteed cleanup on every exit path ---
+# A second deployment must never capture a partially replaced stack.
+exec 9>"${DEPLOY_DIR}/.moss-deploy.lock"
+flock -n 9 || { echo "Deployment already in progress" >&2; exit 1; }
+
+ENV_FILE=$(mktemp /tmp/moss-env.XXXXXXXX)
+readonly ENV_FILE
+mutating=false
 cleanup() {
-  local exit_code=$?
-  if [[ -f "${ENV_FILE}" ]]; then
-    rm -f "${ENV_FILE}"
+  local rc=$?
+  trap - EXIT INT TERM
+  if [[ "$mutating" == true ]]; then
+    echo "Replacement failed; restoring the captured application images." >&2
+    if render_compose "$previous_frontend" "$previous_backend" &&
+       launch && verify "$previous_frontend" "$previous_backend"; then
+      echo "Rollback verified." >&2
+    else
+      echo "CRITICAL: rollback verification failed; operator intervention required." >&2
+    fi
+    (( rc != 0 )) || rc=1
   fi
-  exit "${exit_code}"
+  rm -f "$ENV_FILE"
+  exit "$rc"
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 # --- Resolve and validate digests ---
 FRONTEND_DIGEST="${SSM_frontendDigest:-${1:-}}"
@@ -58,11 +75,29 @@ echo "Starting deployment for MOSS & MARROW:"
 echo "  Frontend image: ${FRONTEND_IMAGE}"
 echo "  Backend image:  ${BACKEND_IMAGE}"
 
-# --- Preserve current digests for rollback ---
-if [[ -f "${DIGESTS_FILE}" ]]; then
-  cp "${DIGESTS_FILE}" "${PREVIOUS_DIGESTS_FILE}"
-fi
+capture() {
+  local service=$1 name="moss_marrow_$1" ref digest actual expected
+  ref=$(docker inspect -f '{{.Config.Image}}' "$name") || return 1
+  digest=${ref##*@}
+  [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ && "$ref" == "$ECR_REGISTRY/moss-marrow/$service@$digest" ]] || return 1
+  grep -Fxq "PREV_${service^^}_DIGEST=$digest" "$DIGESTS_FILE" || return 1
+  actual=$(docker inspect -f '{{.Image}}' "$name") || return 1
+  expected=$(docker image inspect -f '{{.Id}}' "$ref") || return 1
+  [[ "$actual" == "$expected" ]] || return 1
+  printf '%s' "$ref"
+}
+previous_frontend=$(capture frontend) || { echo 'Cannot establish frontend rollback target' >&2; exit 1; }
+previous_backend=$(capture backend) || { echo 'Cannot establish backend rollback target' >&2; exit 1; }
 
+verify() {
+  local fe=$1 be=$2
+  [[ "$(docker inspect -f '{{.Config.Image}}' moss_marrow_frontend)" == "$fe" ]] &&
+  [[ "$(docker inspect -f '{{.Config.Image}}' moss_marrow_backend)" == "$be" ]] &&
+  [[ "$(docker inspect -f '{{.State.Health.Status}}' moss_marrow_backend)" == healthy ]] &&
+  curl -fsS --max-time 5 http://127.0.0.1/ | grep 'id="root"' >/dev/null &&
+  curl -fsS --max-time 5 http://127.0.0.1/api/v1/health | grep '"status":"ok"' >/dev/null
+}
+verify "$previous_frontend" "$previous_backend" || { echo 'Previous application failed health verification' >&2; exit 1; }
 # --- Authenticate Docker to ECR using EC2 instance profile ---
 echo "Authenticating Docker to Amazon ECR..."
 aws ecr get-login-password --region "${AWS_REGION}" | \
@@ -105,7 +140,9 @@ fi
 } >> "${ENV_FILE}"
 
 # --- Generate production Docker Compose specification ---
-cat > "${COMPOSE_FILE}" <<COMPOSEFILE
+render_compose() {
+local FRONTEND_IMAGE=$1 BACKEND_IMAGE=$2
+cat > "${COMPOSE_FILE}.new" <<COMPOSEFILE || return 1
 services:
   database:
     image: mongo:7.0
@@ -168,65 +205,19 @@ volumes:
     driver: local
 COMPOSEFILE
 
-echo "Generated Docker Compose specification."
+mv "${COMPOSE_FILE}.new" "$COMPOSE_FILE"
+}
 
-# --- Deploy services ---
-echo "Launching containers with Docker Compose..."
-docker compose -f "${COMPOSE_FILE}" up -d --remove-orphans
+launch() {
+  docker compose -f "$COMPOSE_FILE" up -d --no-deps --pull never --wait --wait-timeout 65 backend frontend
+}
 
-# --- Health check validation ---
-echo "Validating application health..."
-HEALTH_OK=false
-
-for i in $(seq 1 24); do
-  sleep 5
-  CONTAINER_ID="$(docker compose -f "${COMPOSE_FILE}" ps -q backend 2>/dev/null || true)"
-  if [[ -z "${CONTAINER_ID}" ]]; then
-    echo "  Attempt ${i}/24 — backend container not found"
-    continue
-  fi
-
-  # Query health endpoint from inside the backend container (supports wget or node)
-  HTTP_RESPONSE="$(docker exec "${CONTAINER_ID}" sh -c \
-    'wget -qO- -T 3 "http://127.0.0.1:5000/api/v1/health" 2>/dev/null || node -e "const http=require(\"http\");http.get(\"http://127.0.0.1:5000/api/v1/health\",(r)=>{let d=\"\";r.on(\"data\",c=>d+=c);r.on(\"end\",()=>console.log(d))}).on(\"error\",()=>{});" 2>/dev/null' || true)"
-
-  if echo "${HTTP_RESPONSE}" | grep -q '"status":"ok"'; then
-    echo "✅ Application health check passed (/api/v1/health returned status: ok)"
-    HEALTH_OK=true
-    break
-  fi
-
-  echo "  Attempt ${i}/24 — waiting for backend to be healthy..."
-done
-
-if [[ "${HEALTH_OK}" != "true" ]]; then
-  echo "❌ ERROR: Backend health check failed after 24 attempts (120s)." >&2
-
-  # --- Automated non-recursive rollback ---
-  if [[ -f "${PREVIOUS_DIGESTS_FILE}" ]]; then
-    echo "⚠️ Initiating automated rollback to previous deployment..."
-    # shellcheck source=/dev/null
-    source "${PREVIOUS_DIGESTS_FILE}"
-    PREV_FE="${ECR_REGISTRY}/moss-marrow/frontend@${PREV_FRONTEND_DIGEST}"
-    PREV_BE="${ECR_REGISTRY}/moss-marrow/backend@${PREV_BACKEND_DIGEST}"
-
-    sed -i "s|image: ${BACKEND_IMAGE}|image: ${PREV_BE}|" "${COMPOSE_FILE}"
-    sed -i "s|image: ${FRONTEND_IMAGE}|image: ${PREV_FE}|" "${COMPOSE_FILE}"
-
-    docker compose -f "${COMPOSE_FILE}" up -d --remove-orphans
-    echo "Rollback containers deployed. Preserving original failure status."
-  else
-    echo "⚠️ No previous deployment record found. Halting failed containers."
-    docker compose -f "${COMPOSE_FILE}" down
-  fi
-
-  exit 1
-fi
-
-# --- Persist current successful digests for future rollback ---
-cat > "${DIGESTS_FILE}" <<EOF
-PREV_FRONTEND_DIGEST=${FRONTEND_DIGEST}
-PREV_BACKEND_DIGEST=${BACKEND_DIGEST}
-EOF
-
-echo "✅ MOSS & MARROW deployment completed successfully."
+cp "$DIGESTS_FILE" "$PREVIOUS_DIGESTS_FILE"
+mutating=true
+render_compose "$FRONTEND_IMAGE" "$BACKEND_IMAGE"
+launch
+verify "$FRONTEND_IMAGE" "$BACKEND_IMAGE"
+printf 'PREV_FRONTEND_DIGEST=%s\nPREV_BACKEND_DIGEST=%s\n' "$FRONTEND_DIGEST" "$BACKEND_DIGEST" > "$DIGESTS_FILE.new"
+mv "$DIGESTS_FILE.new" "$DIGESTS_FILE"
+mutating=false
+echo "Deployment verified."

@@ -32,7 +32,18 @@ permissions:
   contents: read
 
 jobs:
+  security:
+    uses: ./.github/workflows/security.yml
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+      packages: write
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   build-and-publish:
+    needs: security
     name: Build, Sign, and Publish Images
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -105,20 +116,20 @@ jobs:
       - name: Scan frontend image for vulnerabilities (Trivy)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: ${{ steps.ecr-login.outputs.registry }}/moss-marrow/frontend:${{ github.sha }}
+          image-ref: ${{ steps.ecr-login.outputs.registry }}/moss-marrow/frontend@${{ steps.frontend-push.outputs.digest }}
           format: "table"
           severity: "CRITICAL,HIGH"
-          ignore-unfixed: true
-        continue-on-error: true
+          ignore-unfixed: false
+          exit-code: "1"
 
       - name: Scan backend image for vulnerabilities (Trivy)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: ${{ steps.ecr-login.outputs.registry }}/moss-marrow/backend:${{ github.sha }}
+          image-ref: ${{ steps.ecr-login.outputs.registry }}/moss-marrow/backend@${{ steps.backend-push.outputs.digest }}
           format: "table"
           severity: "CRITICAL,HIGH"
-          ignore-unfixed: true
-        continue-on-error: true
+          ignore-unfixed: false
+          exit-code: "1"
 
       # ------------------------------------------------------------------------
       # DevSecOps: SBOM Generation (Syft)
@@ -134,7 +145,6 @@ jobs:
           output-file: sbom-frontend.spdx.json
           format: spdx-json
           upload-artifact: false
-        continue-on-error: true
 
       - name: Generate SBOM — backend image
         uses: anchore/sbom-action@61119d458adab75f756bc0b9e4bde25725f86a7a # v0.17.2
@@ -144,7 +154,6 @@ jobs:
           output-file: sbom-backend.spdx.json
           format: spdx-json
           upload-artifact: false
-        continue-on-error: true
 
       - name: Upload SBOM artifacts
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
@@ -165,12 +174,10 @@ jobs:
       - name: Sign frontend image with Cosign
         run: |
           cosign sign --yes "${{ steps.ecr-login.outputs.registry }}/moss-marrow/frontend@${{ steps.frontend-push.outputs.digest }}"
-        continue-on-error: true
 
       - name: Sign backend image with Cosign
         run: |
           cosign sign --yes "${{ steps.ecr-login.outputs.registry }}/moss-marrow/backend@${{ steps.backend-push.outputs.digest }}"
-        continue-on-error: true
 
       # ------------------------------------------------------------------------
       # DevSecOps: Build Provenance Attestation
@@ -181,7 +188,6 @@ jobs:
           subject-name: ${{ steps.ecr-login.outputs.registry }}/moss-marrow/frontend
           subject-digest: ${{ steps.frontend-push.outputs.digest }}
           push-to-registry: true
-        continue-on-error: true
 
       - name: Attest backend build provenance
         uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v2.2.3
@@ -189,13 +195,21 @@ jobs:
           subject-name: ${{ steps.ecr-login.outputs.registry }}/moss-marrow/backend
           subject-digest: ${{ steps.backend-push.outputs.digest }}
           push-to-registry: true
-        continue-on-error: true
 
       # ------------------------------------------------------------------------
       # Summary
       # ------------------------------------------------------------------------
+      - name: Record verified release
+        run: |
+          printf '%s\n' "${{ github.sha }}" "${{ steps.frontend-push.outputs.digest }}" "${{ steps.backend-push.outputs.digest }}" > verified-release.txt
+          sha256sum scripts/deploy.sh | cut -d' ' -f1 >> verified-release.txt
+      - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882
+        with:
+          name: verified-release-${{ github.run_attempt }}
+          path: verified-release.txt
+          if-no-files-found: error
+
       - name: Publish release summary
-        if: always()
         run: |
           echo "## 🐳 Container Release Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
