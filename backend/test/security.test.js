@@ -75,7 +75,7 @@ test('actual MongoDB indexes enforce retries and concurrent seating capacity', {
   assert.equal(receipts[0].data.reference, receipts[1].data.reference);
   assert.equal((await request({...booking,guests:3},headers['Idempotency-Key'])).status,409);
   assert.equal((await request(booking,'test-reservation-00002')).status,201);
-  const record={...booking,date:new Date(booking.date),seatSlot:19,reference:'MM-TEST',requestKey:'test-index'};
+  const record={...booking,date:new Date(booking.date),status:'pending',seatSlot:19,reference:'MM-TEST',requestKey:'test-index'};
   await Reservation.create(record);
   await assert.rejects(Reservation.create({...record,reference:'MM-SECOND',requestKey:'other'}),{code:11000});
   assert.equal(await Reservation.countDocuments(),3);

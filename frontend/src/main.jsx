@@ -13,6 +13,7 @@ import { useCart } from './shop/cart';
 import { branches } from './visit/branches';
 import { LocationsPage, BranchPage } from './visit/Locations';
 
+const Admin = lazy(() => import('./admin/Admin'));
 const MenuPage = lazy(() => import('./shop/MenuPage').then(m => ({default: m.MenuPage})));
 const CheckoutPage = lazy(() => import('./shop/CheckoutPage').then(m => ({default: m.CheckoutPage})));
 const form = name => lazy(() => import('./visit/Forms').then(m => ({default: m[name]})));
@@ -39,6 +40,7 @@ function App() {
     }
   }, [pathname]);
 
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) return <Suspense fallback={<main>Loading owner dashboard…</main>}><Admin/></Suspense>;
   return <><a className="skip" href="#page">Skip to content</a><Header count={cart.count} openBag={() => setBagOpen(true)}/>
     <div ref={page} key={pathname} id="page" className="page-enter" tabIndex="-1">
       <Suspense fallback={<main className="wrap page-skeleton" aria-busy="true" aria-label="Loading page"><span/><span/></main>}>

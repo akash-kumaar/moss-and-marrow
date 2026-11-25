@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const enquirySchema = new mongoose.Schema({
+  status: {type:String, enum:['pending','resolved'], default:'pending'},
   reference: { type: String, required: true, unique: true },
   type: { type: String, required: true, enum: ['general', 'private-dining'] },
   name: { type: String, required: true, maxlength: 100 },

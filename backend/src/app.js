@@ -6,6 +6,7 @@ import { configuredLimit, limitRequests, trustFrontend } from './security.js';
 import menu from './routes/menu.js';
 import reservations from './routes/reservations.js';
 import enquiries from './routes/enquiries.js';
+import admin from './admin/routes.js';
 import imageReview from './routes/imageReview.js';
 
 const app = express();
@@ -27,6 +28,7 @@ for (const [path, key, max] of [['reservations','RESERVATIONS_PER_10_MINUTES',12
   app.post('/api/v1/' + path, limitRequests(configuredLimit(key, max), 600000));
 }
 app.use(express.json({ limit: '12kb' }));
+app.use('/api/v1/admin', admin);
 app.use('/api/v1/menu', menu);
 app.use('/api/v1/reservations', reservations);
 app.use('/api/v1/enquiries', enquiries);
