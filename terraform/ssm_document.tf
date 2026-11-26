@@ -19,6 +19,13 @@ resource "aws_ssm_document" "deploy" {
         allowedPattern = "^[a-f0-9]{64}$"
         interpolationType = "ENV_VAR"
       }
+      deployScript = {
+        type              = "String"
+        description       = "Base64-encoded deploy.sh from the verified release"
+        allowedPattern    = "^[A-Za-z0-9+/]+={0,2}$"
+        maxChars          = 16384
+        interpolationType = "ENV_VAR"
+      }
       frontendDigest = {
         type              = "String"
         description       = "Frontend image digest (sha256:...)"
@@ -37,7 +44,17 @@ resource "aws_ssm_document" "deploy" {
         action = "aws:runShellScript"
         name   = "deploy"
         inputs = {
-          runCommand       = ["set -eu", "printf '%s  /opt/deploy.sh\\n' \"$SSM_scriptSha256\" | sha256sum -c -", "exec /opt/deploy.sh"]
+          runCommand = [
+            "set -eu",
+            "tmp=$(mktemp /opt/deploy.sh.XXXXXX)",
+            "trap 'rm -f \"$tmp\"' EXIT",
+            "printf '%s' \"$SSM_deployScript\" | base64 --decode > \"$tmp\"",
+            "printf '%s  %s\\n' \"$SSM_scriptSha256\" \"$tmp\" | sha256sum -c -",
+            "chmod 0700 \"$tmp\"",
+            "mv -f \"$tmp\" /opt/deploy.sh",
+            "trap - EXIT",
+            "exec /opt/deploy.sh \"$SSM_frontendDigest\" \"$SSM_backendDigest\""
+          ]
           timeoutSeconds   = "300"
           workingDirectory = "/opt"
         }
