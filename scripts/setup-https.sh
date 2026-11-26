@@ -46,6 +46,7 @@ mv "$CONFIG_DIR/public-ip.new" "$CONFIG_DIR/public-ip"
 # Prove the running Nginx serves the exact HTTP-01 webroot before contacting ACME.
 probe="moss-marrow-$(date +%s)-$RANDOM"
 printf '%s' "$probe" > "$WEBROOT/.well-known/acme-challenge/$probe"
+chmod 0644 "$WEBROOT/.well-known/acme-challenge/$probe"
 served=$(curl --fail --silent --show-error --max-time 5 -H "Host: $PUBLIC_IP" \
   "http://127.0.0.1/.well-known/acme-challenge/$probe") || {
   rm -f "$WEBROOT/.well-known/acme-challenge/$probe"
