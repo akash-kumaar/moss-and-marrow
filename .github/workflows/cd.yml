@@ -50,11 +50,30 @@ jobs:
         run: |
           echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
 
+      - name: Checkout deployment source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ steps.resolve-sha.outputs.sha }}
+          persist-credentials: false
+
       - name: Read verified release from triggering run
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: gh run download "${{ github.event.workflow_run.id }}" --name "verified-release-${{ github.event.workflow_run.run_attempt }}"
+
+      - name: Prepare deployment script payload
+        id: deploy-script
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import base64
+          from pathlib import Path
+
+          encoded = base64.b64encode(Path("scripts/deploy.sh").read_bytes()).decode("ascii")
+          if len(encoded) > 16384:
+              raise SystemExit("Deployment script exceeds the SSM parameter size configured in Terraform")
+          print(f"content={encoded}")
+          PY
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
@@ -105,6 +124,8 @@ jobs:
           [[ ${#release[@]} == 4 && ${release[0]} == "${{ steps.resolve-sha.outputs.sha }}" ]]
           [[ ${release[1]} == "${{ steps.frontend-digest.outputs.digest }}" && ${release[2]} == "${{ steps.backend-digest.outputs.digest }}" ]]
           [[ ${release[3]} =~ ^[a-f0-9]{64}$ ]]
+          SCRIPT_SHA=$(sha256sum scripts/deploy.sh | cut -d' ' -f1)
+          [[ "$SCRIPT_SHA" == "${release[3]}" ]]
           echo "script=${release[3]}" >> "$GITHUB_OUTPUT"
           [[ "$AWS_REGION" == ap-south-1 && "$(aws sts get-caller-identity --query Account --output text)" == 874940900689 ]]
 
@@ -125,12 +146,23 @@ jobs:
 
       - name: Send SSM deployment command
         id: ssm-send
+        env:
+          SCRIPT_SHA: ${{ steps.verified.outputs.script }}
+          DEPLOY_SCRIPT: ${{ steps.deploy-script.outputs.content }}
+          FRONTEND_DIGEST: ${{ steps.frontend-digest.outputs.digest }}
+          BACKEND_DIGEST: ${{ steps.backend-digest.outputs.digest }}
         run: |
+          PARAMETERS=$(jq -cn \
+            --arg scriptSha256 "$SCRIPT_SHA" \
+            --arg deployScript "$DEPLOY_SCRIPT" \
+            --arg frontendDigest "$FRONTEND_DIGEST" \
+            --arg backendDigest "$BACKEND_DIGEST" \
+            '{scriptSha256:[$scriptSha256],deployScript:[$deployScript],frontendDigest:[$frontendDigest],backendDigest:[$backendDigest]}')
           COMMAND_ID=$(aws ssm send-command \
             --region "${{ env.AWS_REGION }}" \
             --document-name "${{ env.SSM_DOCUMENT }}" \
             --instance-ids "${{ steps.instance.outputs.instance_id }}" \
-            --parameters "scriptSha256=${{ steps.verified.outputs.script }},frontendDigest=${{ steps.frontend-digest.outputs.digest }},backendDigest=${{ steps.backend-digest.outputs.digest }}" \
+            --parameters "$PARAMETERS" \
             --timeout-seconds 300 \
             --query 'Command.CommandId' \
             --output text)
