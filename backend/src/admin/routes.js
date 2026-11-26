@@ -1,3 +1,4 @@
+import { failedLoginGuard } from './loginGuard.js';
 import { randomBytes } from 'node:crypto';
 import { Router } from 'express';
 import { z } from 'zod';
@@ -11,7 +12,7 @@ import { limitRequests } from '../security.js';
 const router = Router();
 router.use((req,res,next)=>{res.set('Cache-Control','no-store');next();});
 const login = z.object({email:z.string().email().max(254),password:z.string().min(1).max(256)}).strict();
-router.post('/login', limitRequests(8,900000), async(req,res,next)=>{
+router.post('/login', failedLoginGuard(), async(req,res,next)=>{
   try {
     const input=login.parse(req.body);
     const owner=await Owner.findOne({email:input.email.trim().toLowerCase()});

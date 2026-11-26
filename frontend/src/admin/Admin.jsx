@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { branches } from '../visit/branches';
+import { LayoutDashboard, CalendarDays, Users, MapPin, Inbox, UtensilsCrossed, ShieldCheck } from 'lucide-react';
 import './admin.css';
 
 const base = '/api/v1/admin';
+const sectionIcons = {Overview:LayoutDashboard,Reservations:CalendarDays,Customers:Users,Branches:MapPin,Enquiries:Inbox,Menu:UtensilsCrossed,Integrity:ShieldCheck};
 const sections = ['Overview','Reservations','Customers','Branches','Enquiries','Menu','Integrity'];
 async function request(path, options = {}) {
   const response = await fetch(base + path, {credentials:'same-origin',...options});
   const body = await response.json();
-  if (!response.ok) throw Object.assign(new Error(body.message || 'Request failed.'),{status:response.status});
+  if (!response.ok) throw Object.assign(new Error(body.message || 'Request failed.'),{status:response.status,retryAfter:Number(response.headers.get("Retry-After"))||0});
   return body.data;
 }
 const date = value => value ? new Intl.DateTimeFormat('en-IN',{dateStyle:'medium',timeZone:'Asia/Kolkata'}).format(new Date(value)) : '—';
@@ -18,6 +20,10 @@ function Distribution({title,rows = [],field = 'count'}) {
 }
 export default function Admin() {
   const [session,setSession]=useState(undefined);
+  const [showPassword,setShowPassword]=useState(false);
+  const [lockUntil,setLockUntil]=useState(0);
+  const [secondsLeft,setSecondsLeft]=useState(0);
+  useEffect(()=>{if(!lockUntil)return;const tick=()=>setSecondsLeft(Math.max(0,Math.ceil((lockUntil-Date.now())/1000)));tick();const timer=setInterval(tick,250);return ()=>clearInterval(timer);},[lockUntil]);
   const [section,setSection]=useState('Overview');
   const [q,setQuery]=useState('');
   const [branch,setBranch]=useState('');
@@ -47,23 +53,25 @@ export default function Admin() {
     event.preventDefault();setBusy(true);setError('');
     try {
       const values=Object.fromEntries(new FormData(event.currentTarget));
+
       await request('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(values)});
       setSession(await request('/session'));
-    }catch(e){setError(e.message);}finally{setBusy(false);}
+    }catch(e){setError(e.message);if(e.retryAfter){setLockUntil(Date.now()+e.retryAfter*1000);setSecondsLeft(e.retryAfter);}}finally{setBusy(false);}
   }
   async function update(path,body) {
     if(!window.confirm('Save these changes?'))return;
     setBusy(true);setError('');
-    try{await request(path,{method:'PATCH',headers,body:JSON.stringify(body)});setNotice('Changes saved.');setRefresh(n=>n+1);}catch(e){setError(e.message);}finally{setBusy(false);}
+    try{await request(path,{method:'PATCH',headers,body:JSON.stringify(body)});setNotice('Changes saved.');setRefresh(n=>n+1);}catch(e){setError(e.message);if(e.retryAfter){setLockUntil(Date.now()+e.retryAfter*1000);setSecondsLeft(e.retryAfter);}}finally{setBusy(false);}
   }
   async function saveDish(event) {
     event.preventDefault();
     const values=Object.fromEntries(new FormData(event.currentTarget));
+
     const body={...values,price:Number(values.price),isAvailable:values.isAvailable==='on'};
     if(selected.slug)delete body.slug;
     if(!window.confirm('Save this dish to the public menu?'))return;
     setBusy(true);
-    try {await request('/menu'+(selected.slug?'/'+selected.slug:''),{method:selected.slug?'PATCH':'POST',headers,body:JSON.stringify(body)});setNotice('Menu saved.');setRefresh(n=>n+1);}catch(e){setError(e.message);}finally{setBusy(false);}
+    try {await request('/menu'+(selected.slug?'/'+selected.slug:''),{method:selected.slug?'PATCH':'POST',headers,body:JSON.stringify(body)});setNotice('Menu saved.');setRefresh(n=>n+1);}catch(e){setError(e.message);if(e.retryAfter){setLockUntil(Date.now()+e.retryAfter*1000);setSecondsLeft(e.retryAfter);}}finally{setBusy(false);}
   }
   async function exportRows() {
     setBusy(true);
@@ -71,15 +79,15 @@ export default function Admin() {
       const response=await fetch(base+'/'+resource+(section==='Integrity'?'?export=csv&':'/export?')+params);
       if(!response.ok)throw new Error((await response.json()).message);
       const url=URL.createObjectURL(await response.blob());const a=document.createElement('a');a.href=url;a.download=resource+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
-    }catch(e){setError(e.message);}finally{setBusy(false);}
+    }catch(e){setError(e.message);if(e.retryAfter){setLockUntil(Date.now()+e.retryAfter*1000);setSecondsLeft(e.retryAfter);}}finally{setBusy(false);}
   }
   if(session===undefined)return <main className="owner-login" aria-busy="true">Checking owner session…</main>;
-  if(!session)return <main className="owner-login"><form onSubmit={login}><a href="/">Moss & Marrow</a><p>Owner access</p><h1>Welcome back.</h1><label>Email<input name="email" type="email" autoComplete="username" required/></label><label>Password<input name="password" type="password" autoComplete="current-password" required/></label>{error&&<p role="alert">{error}</p>}<button disabled={busy}>Sign in</button></form></main>;
+  if(!session)return <main className="owner-login"><form onSubmit={login}><a href="/">Moss & Marrow</a><p>Owner access</p><h1>Welcome back.</h1><label>Email<input name="email" type="email" autoComplete="username" required/></label><label>Password<span className="owner-password"><input name="password" type={showPassword?"text":"password"} autoComplete="current-password" required/><button type="button" aria-pressed={showPassword} onClick={()=>setShowPassword(value=>!value)}>{showPassword?"Hide":"Show"}</button></span></label>{error&&<p role="alert">{error}</p>}<button disabled={busy||secondsLeft>0}>{secondsLeft>0?`Try again in ${secondsLeft}s`:busy?"Signing in…":"Sign in"}</button></form></main>;
   const overview=section==='Overview'||section==='Branches';
   const items=data?.items || [];
   return <div className={'owner-app '+(collapsed?'owner-compact':'')}>
-    <aside><a href="/">Moss & Marrow</a><button onClick={()=>setCollapsed(!collapsed)} aria-label="Toggle sidebar">☰</button><nav>{sections.map(name=><button key={name} aria-current={name===section?'page':undefined} onClick={()=>{setSection(name);setPage(1);setStatus('');setSelected(null);}}>{name}</button>)}</nav><small>{session.email}</small><button onClick={async()=>{try{await request('/logout',{method:'POST',headers});setSession(null);}catch(e){setError(e.message);}}}>Sign out</button></aside>
-    <main><header><div><p>Restaurant operations</p><h1>{section==='Integrity'?'Booking integrity':section}</h1></div><a href="/">View website ↗</a></header>
+    <aside><a href="/">Moss & Marrow</a><button onClick={()=>setCollapsed(!collapsed)} aria-label="Toggle sidebar">☰</button><nav>{sections.map(name=><button key={name} aria-current={name===section?'page':undefined} onClick={()=>{setSection(name);setPage(1);setStatus('');setSelected(null);}}>{React.createElement(sectionIcons[name],{size:18,"aria-hidden":true})}<span>{name}</span></button>)}</nav><small>{session.email}</small><button onClick={async()=>{try{await request('/logout',{method:'POST',headers});setSession(null);}catch(e){setError(e.message);}}}>Sign out</button></aside>
+    <main><header><div><p>Restaurant operations</p><h1>{section==='Integrity'?'Booking integrity':section}</h1></div><div className="owner-header-actions"><button onClick={()=>setRefresh(n=>n+1)}>Refresh data</button><a href="/">View website ↗</a></div></header><p className="owner-context">Private owner workspace · Bookings and enquiries from your website</p>
     <div className="owner-filters"><label>Branch<select value={branch} onChange={e=>{setBranch(e.target.value);setPage(1);}}><option value="">All locations</option>{branches.map(b=><option key={b.slug} value={b.slug}>{b.name}</option>)}</select></label><label>From<input type="date" value={from} onChange={e=>{setFrom(e.target.value);setPage(1);}}/></label><label>Through<input type="date" value={to} onChange={e=>{setTo(e.target.value);setPage(1);}}/></label>
     {!overview&&<label>Search<input type="search" placeholder="Name, email or reference" value={q} onChange={e=>{setQuery(e.target.value);setPage(1);}}/></label>}
     {['Reservations','Enquiries'].includes(section)&&<label>Status<select value={status} onChange={e=>{setStatus(e.target.value);setPage(1);}}><option value="">All statuses</option>{(section==='Reservations'?['pending','confirmed','cancelled','completed']:['pending','resolved']).map(s=><option key={s}>{s}</option>)}</select></label>}
