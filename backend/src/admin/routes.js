@@ -1,3 +1,5 @@
+import { rateLimit } from 'express-rate-limit';
+import { failedLoginGuard } from './loginGuard.js';
 import { randomBytes } from 'node:crypto';
 import { Router } from 'express';
 import { z } from 'zod';
@@ -6,12 +8,12 @@ import Enquiry from '../models/Enquiry.js';
 import MenuItem from '../models/MenuItem.js';
 import { Owner, OwnerSession } from './models.js';
 import { authenticated, checkPassword, cookieName, cookieOptions, tokenHash } from './auth.js';
-import { limitRequests } from '../security.js';
+
 
 const router = Router();
 router.use((req,res,next)=>{res.set('Cache-Control','no-store');next();});
 const login = z.object({email:z.string().email().max(254),password:z.string().min(1).max(256)}).strict();
-router.post('/login', limitRequests(8,900000), async(req,res,next)=>{
+router.post('/login', rateLimit({windowMs:60000,limit:30,standardHeaders:'draft-8',legacyHeaders:false,message:{message:'Please wait one minute before trying again.',retryAfter:60}}), failedLoginGuard(), async(req,res,next)=>{
   try {
     const input=login.parse(req.body);
     const owner=await Owner.findOne({email:input.email.trim().toLowerCase()});

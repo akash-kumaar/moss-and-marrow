@@ -1,3 +1,4 @@
+import { reachableEmailDomain } from './emailDomain.js';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -23,11 +24,16 @@ app.use((req, res, next) => {
   next();
 });
 app.get('/api/v1/health', (req, res) => mongoose.connection.readyState === 1 ? res.json({ status: 'ok' }) : res.status(503).json({status: 'unavailable'}));
-app.use('/api/v1', limitRequests(configuredLimit('API_REQUESTS_PER_MINUTE', 240), 60000));
+const apiLimit = limitRequests(configuredLimit('API_REQUESTS_PER_MINUTE', 240), 60000);
+app.use('/api/v1', (req,res,next) => {
+  if (process.env.NODE_ENV !== 'production' && /^\/admin(?:\/|$)/.test(req.path)) return next();
+  return apiLimit(req,res,next);
+});
 for (const [path, key, max] of [['reservations','RESERVATIONS_PER_10_MINUTES',12], ['enquiries','ENQUIRIES_PER_10_MINUTES',10]]) {
   app.post('/api/v1/' + path, limitRequests(configuredLimit(key, max), 600000));
 }
 app.use(express.json({ limit: '12kb' }));
+app.post(['/api/v1/reservations','/api/v1/enquiries'], reachableEmailDomain);
 app.use('/api/v1/admin', admin);
 app.use('/api/v1/menu', menu);
 app.use('/api/v1/reservations', reservations);

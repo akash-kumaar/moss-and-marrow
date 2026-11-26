@@ -11,3 +11,8 @@ Reservation calendar fields are interpreted as UTC calendar dates, with today de
 Production rollout requires current EC2 identity, private recoverable backup, compatible indexes, verified running digests and green release checks. Verify HTTPS and owner provisioning before exposing login. Session metadata and owner records live in MongoDB and are included in backups. The new enquiry status defaults to pending and legacy records without status remain pending for filtering. Public APIs remain separate from owner management.
 
 Known remaining work: quick week/month filters, reservation sort controls, integrity CSV exports and severity filters, detailed per-branch seating/status reports, and full browser interaction testing. Frontend statistics are real database aggregates. No email or marketing delivery is implemented.
+
+## Demo login
+Admin login uses email and password only. Provision each account privately using admin:bootstrap; no public registration exists. Authenticator codes are not required. Never reuse a real personal password for demo accounts.
+
+Production booking/enquiry submissions additionally reject reserved/example domains and domains without a usable MX record. DNS failures return a retryable error. This checks the domain, not mailbox ownership: email OTP requires a transactional mail provider, which is not configured. Real names, phone ownership and intent cannot be guaranteed. Existing IP rate limits, request size limits and capacity/idempotency checks remain active. Turnstile remains optional and needs its existing server/site configuration. These controls do not prevent distributed denial of service; upstream protection is still necessary for that threat.
