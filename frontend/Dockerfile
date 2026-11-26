@@ -26,15 +26,18 @@ FROM nginx:1.27-alpine
 RUN apk update && apk upgrade --no-cache
 
 # Remove default nginx configuration and static site
-RUN rm -rf /usr/share/nginx/html/* /etc/nginx/conf.d/default.conf
+RUN rm -rf /usr/share/nginx/html/* /etc/nginx/conf.d/default.conf \
+    && mkdir -p /etc/nginx/moss-tls /etc/nginx/snippets /var/www/acme \
+    && touch /etc/nginx/moss-tls/https-server.conf /etc/nginx/moss-tls/https-redirect.conf
 
 # Copy custom Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx-routes.conf /etc/nginx/snippets/moss-routes.conf
 
 # Copy built application from Stage 1
 COPY --from=build /app/dist /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 80 443
 
 CMD ["nginx", "-g", "daemon off;"]
 
