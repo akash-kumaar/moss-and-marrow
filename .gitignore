@@ -6,6 +6,12 @@ uploads/
 cache/
 *.log
 
+# TLS private material must never enter an application image or Git history.
+*.pem
+*.key
+*.p12
+*.pfx
+
 # Terraform
 .terraform/
 *.tfstate

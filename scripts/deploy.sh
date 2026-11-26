@@ -13,9 +13,27 @@ readonly DEPLOY_DIR="/opt"
 readonly COMPOSE_FILE="${DEPLOY_DIR}/docker-compose.deploy.yml"
 readonly DIGESTS_FILE="${DEPLOY_DIR}/current_digests.env"
 readonly PREVIOUS_DIGESTS_FILE="${DEPLOY_DIR}/previous_digests.env"
+readonly TLS_DIR="${DEPLOY_DIR}/moss-tls"
+readonly ACME_WEBROOT="${DEPLOY_DIR}/moss-acme-webroot"
+readonly CERT_ROOT="/etc/letsencrypt"
 umask 077
 readonly AWS_REGION="ap-south-1"
 readonly ECR_REGISTRY="874940900689.dkr.ecr.${AWS_REGION}.amazonaws.com"
+PUBLIC_IP="${MOSS_PUBLIC_IP:-13.204.246.90}"
+if [[ -r /etc/moss-marrow/public-ip ]]; then
+  PUBLIC_IP=$(</etc/moss-marrow/public-ip)
+fi
+if [[ ! "$PUBLIC_IP" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+  echo 'ERROR: Invalid public IP configuration' >&2
+  exit 1
+fi
+
+# Persistent host paths survive immutable frontend image replacements.
+mkdir -p "$TLS_DIR" "$ACME_WEBROOT/.well-known/acme-challenge"
+[[ -e "$TLS_DIR/https-server.conf" ]] || : > "$TLS_DIR/https-server.conf"
+[[ -e "$TLS_DIR/https-redirect.conf" ]] || : > "$TLS_DIR/https-redirect.conf"
+chmod 0755 "$TLS_DIR" "$ACME_WEBROOT" "$ACME_WEBROOT/.well-known" "$ACME_WEBROOT/.well-known/acme-challenge"
+chmod 0644 "$TLS_DIR/https-server.conf" "$TLS_DIR/https-redirect.conf"
 
 # A second deployment must never capture a partially replaced stack.
 exec 9>"${DEPLOY_DIR}/.moss-deploy.lock"
@@ -91,11 +109,16 @@ previous_backend=$(capture backend) || { echo 'Cannot establish backend rollback
 
 verify() {
   local fe=$1 be=$2
+  local origin=http://127.0.0.1 curl_resolve=()
+  if [[ -s "$TLS_DIR/https-server.conf" ]]; then
+    origin="https://${PUBLIC_IP}"
+    curl_resolve=(--connect-to "${PUBLIC_IP}:443:127.0.0.1:443")
+  fi
   [[ "$(docker inspect -f '{{.Config.Image}}' moss_marrow_frontend)" == "$fe" ]] &&
   [[ "$(docker inspect -f '{{.Config.Image}}' moss_marrow_backend)" == "$be" ]] &&
   [[ "$(docker inspect -f '{{.State.Health.Status}}' moss_marrow_backend)" == healthy ]] &&
-  curl -fsS --max-time 5 http://127.0.0.1/ | grep 'id="root"' >/dev/null &&
-  curl -fsS --max-time 5 http://127.0.0.1/api/v1/health | grep '"status":"ok"' >/dev/null
+  curl -fsS --max-time 5 "${curl_resolve[@]}" "${origin}/" | grep 'id="root"' >/dev/null &&
+  curl -fsS --max-time 5 "${curl_resolve[@]}" "${origin}/api/v1/health" | grep '"status":"ok"' >/dev/null
 }
 verify "$previous_frontend" "$previous_backend" || { echo 'Previous application failed health verification' >&2; exit 1; }
 # --- Authenticate Docker to ECR using EC2 instance profile ---
@@ -171,7 +194,7 @@ services:
       PORT: "5000"
       HOST: "0.0.0.0"
       NODE_ENV: "production"
-      CLIENT_URL: "http://localhost:80"
+      CLIENT_URL: "https://${PUBLIC_IP}"
     depends_on:
       database:
         condition: service_healthy
@@ -190,6 +213,11 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ${TLS_DIR}:/etc/nginx/moss-tls:ro
+      - ${CERT_ROOT}:/etc/letsencrypt:ro
+      - ${ACME_WEBROOT}:/var/www/acme:ro
     depends_on:
       backend:
         condition: service_healthy
