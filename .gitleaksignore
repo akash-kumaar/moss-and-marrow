@@ -1,0 +1,2 @@
+# Reviewed false positive: public localStorage shopping-bag name, not a credential.
+fc60ceedc3efec906acc53a48694f5644e608a46:frontend/src/shop/cart.js:generic-api-key:3
