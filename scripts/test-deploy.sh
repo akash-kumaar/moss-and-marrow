@@ -5,6 +5,7 @@ root=$(cd "$(dirname "$0")/.." && pwd)
 dir=$(mktemp -d)
 trap 'rm -rf "$dir"' EXIT
 export QA="$dir"
+export SSM_commitSha=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 export MOSS_PUBLIC_IP=198.51.100.12
 mkdir "$dir/bin"
 export PATH="$dir/bin:$PATH"
@@ -47,7 +48,7 @@ case "$1" in
 esac
 MOCK
 chmod +x "$dir/bin/"*
-for CASE in success tls tls_health pull replacement health missing rollback_failure; do
+for CASE in success tls tls_health pull replacement health missing rollback_failure metadata; do
   export CASE
   rm -rf "$dir/moss-tls"
   if [[ $CASE == tls || $CASE == tls_health ]]; then
@@ -59,6 +60,7 @@ for CASE in success tls tls_health pull replacement health missing rollback_fail
   : > "$dir/curl"
   printf 'PREV_FRONTEND_DIGEST=%s\nPREV_BACKEND_DIGEST=%s\n' "$OLD" "$OLD" > "$dir/current_digests.env"
   if [[ $CASE == missing ]]; then : > "$dir/current_digests.env"; fi
+  if [[ $CASE == metadata ]]; then printf 'broken' > "$dir/moss-releases.json"; fi
   rc=0; bash "$dir/deploy" "$NEW" "$NEW" > "$dir/log" 2>&1 || rc=$?
   case "$CASE" in
     success) [[ $rc == 0 && $(cat "$dir/current") == "$NEW" ]];;
@@ -66,6 +68,7 @@ for CASE in success tls tls_health pull replacement health missing rollback_fail
     tls_health) [[ $rc != 0 && $(cat "$dir/current") == "$OLD" ]]; grep -q 'Rollback verified' "$dir/log"; grep -q 'https://198.51.100.12' "$dir/curl";;
     pull|missing) [[ $rc != 0 && ! -s "$dir/replacements" ]];;
     replacement|health) [[ $rc != 0 && $(cat "$dir/current") == "$OLD" ]]; grep -q 'Rollback verified' "$dir/log";;
+    metadata) [[ $rc != 0 && $(cat "$dir/current") == "$OLD" ]]; grep -q "PREV_FRONTEND_DIGEST=$OLD" "$dir/current_digests.env"; [[ "$(cat "$dir/moss-releases.json")" == broken ]];;
     rollback_failure) [[ $rc != 0 ]]; grep -q 'rollback verification failed' "$dir/log";;
   esac
   echo "PASS $CASE"

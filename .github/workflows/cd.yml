@@ -147,17 +147,19 @@ jobs:
       - name: Send SSM deployment command
         id: ssm-send
         env:
+          COMMIT_SHA: ${{ steps.resolve-sha.outputs.sha }}
           SCRIPT_SHA: ${{ steps.verified.outputs.script }}
           DEPLOY_SCRIPT: ${{ steps.deploy-script.outputs.content }}
           FRONTEND_DIGEST: ${{ steps.frontend-digest.outputs.digest }}
           BACKEND_DIGEST: ${{ steps.backend-digest.outputs.digest }}
         run: |
           PARAMETERS=$(jq -cn \
+            --arg commitSha "$COMMIT_SHA" \
             --arg scriptSha256 "$SCRIPT_SHA" \
             --arg deployScript "$DEPLOY_SCRIPT" \
             --arg frontendDigest "$FRONTEND_DIGEST" \
             --arg backendDigest "$BACKEND_DIGEST" \
-            '{scriptSha256:[$scriptSha256],deployScript:[$deployScript],frontendDigest:[$frontendDigest],backendDigest:[$backendDigest]}')
+            '{commitSha:[$commitSha],scriptSha256:[$scriptSha256],deployScript:[$deployScript],frontendDigest:[$frontendDigest],backendDigest:[$backendDigest]}')
           COMMAND_ID=$(aws ssm send-command \
             --region "${{ env.AWS_REGION }}" \
             --document-name "${{ env.SSM_DOCUMENT }}" \

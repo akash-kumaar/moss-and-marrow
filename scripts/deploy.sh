@@ -39,6 +39,9 @@ chmod 0644 "$TLS_DIR/https-server.conf" "$TLS_DIR/https-redirect.conf"
 exec 9>"${DEPLOY_DIR}/.moss-deploy.lock"
 flock -n 9 || { echo "Deployment already in progress" >&2; exit 1; }
 
+# Required for auditable rollback history; supplied by the verified release workflow.
+RELEASE_COMMIT=${SSM_commitSha:-${3:-}}
+[[ "$RELEASE_COMMIT" =~ ^[a-f0-9]{40}$ ]] || { echo 'A full release commit SHA is required' >&2; exit 1; }
 ENV_FILE=$(mktemp /tmp/moss-env.XXXXXXXX)
 readonly ENV_FILE
 mutating=false
@@ -48,7 +51,8 @@ cleanup() {
   if [[ "$mutating" == true ]]; then
     echo "Replacement failed; restoring the captured application images." >&2
     if render_compose "$previous_frontend" "$previous_backend" &&
-       launch && verify "$previous_frontend" "$previous_backend"; then
+       launch && verify "$previous_frontend" "$previous_backend" &&
+       cp "$PREVIOUS_DIGESTS_FILE" "$DIGESTS_FILE.new" && mv "$DIGESTS_FILE.new" "$DIGESTS_FILE"; then
       echo "Rollback verified." >&2
     else
       echo "CRITICAL: rollback verification failed; operator intervention required." >&2
@@ -247,5 +251,22 @@ launch
 verify "$FRONTEND_IMAGE" "$BACKEND_IMAGE"
 printf 'PREV_FRONTEND_DIGEST=%s\nPREV_BACKEND_DIGEST=%s\n' "$FRONTEND_DIGEST" "$BACKEND_DIGEST" > "$DIGESTS_FILE.new"
 mv "$DIGESTS_FILE.new" "$DIGESTS_FILE"
+# Commit history atomically only after health checks; failed writes retain valid history.
+python3 - "$DEPLOY_DIR/moss-releases.json" "$RELEASE_COMMIT" "$FRONTEND_DIGEST" "$BACKEND_DIGEST" <<'PY'
+import datetime,json,os,pathlib,secrets,sys,tempfile
+path=pathlib.Path(sys.argv[1]); rows=json.loads(path.read_text()) if path.exists() else []
+assert isinstance(rows,list) and len(rows)<=10, 'Invalid release history'
+now=datetime.datetime.now(datetime.timezone.utc)
+release={'id':sys.argv[2]+'-'+now.strftime('%Y%m%dT%H%M%SZ')+'-'+secrets.token_hex(4),'commit':sys.argv[2],
+         'frontend':sys.argv[3],'backend':sys.argv[4],'timestamp':now.strftime('%Y-%m-%dT%H:%M:%SZ')}
+fd,tmp=tempfile.mkstemp(prefix='.moss-releases.',dir=path.parent)
+try:
+    with os.fdopen(fd,'w') as f:
+        json.dump((rows+[release])[-10:],f,indent=2); f.flush(); os.fsync(f.fileno())
+    os.replace(tmp,path)
+finally:
+    if os.path.exists(tmp): os.unlink(tmp)
+print('Recorded release: '+release['id'])
+PY
 mutating=false
 echo "Deployment verified."

@@ -14,9 +14,27 @@ resource "aws_ssm_document" "deploy" {
     schemaVersion = "2.2"
     description   = "Deploy MOSS & MARROW containers via Docker Compose"
     parameters = {
+      operation = {
+        type              = "String"
+        default           = "deploy"
+        allowedValues     = ["deploy", "rollback"]
+        interpolationType = "ENV_VAR"
+      }
+      releaseId = {
+        type              = "String"
+        default           = ""
+        allowedPattern    = "^([a-f0-9]{40}-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8})?$"
+        interpolationType = "ENV_VAR"
+      }
+      commitSha = {
+        type              = "String"
+        default           = ""
+        allowedPattern    = "^([a-f0-9]{40})?$"
+        interpolationType = "ENV_VAR"
+      }
       scriptSha256 = {
-        type = "String"
-        allowedPattern = "^[a-f0-9]{64}$"
+        type              = "String"
+        allowedPattern    = "^[a-f0-9]{64}$"
         interpolationType = "ENV_VAR"
       }
       deployScript = {
@@ -28,14 +46,16 @@ resource "aws_ssm_document" "deploy" {
       }
       frontendDigest = {
         type              = "String"
+        default           = ""
         description       = "Frontend image digest (sha256:...)"
-        allowedPattern    = "^sha256:[a-f0-9]{64}$"
+        allowedPattern    = "^(sha256:[a-f0-9]{64})?$"
         interpolationType = "ENV_VAR"
       }
       backendDigest = {
         type              = "String"
+        default           = ""
         description       = "Backend image digest (sha256:...)"
-        allowedPattern    = "^sha256:[a-f0-9]{64}$"
+        allowedPattern    = "^(sha256:[a-f0-9]{64})?$"
         interpolationType = "ENV_VAR"
       }
     }
@@ -51,11 +71,13 @@ resource "aws_ssm_document" "deploy" {
             "printf '%s' \"$SSM_deployScript\" | base64 --decode > \"$tmp\"",
             "printf '%s  %s\\n' \"$SSM_scriptSha256\" \"$tmp\" | sha256sum -c -",
             "chmod 0700 \"$tmp\"",
-            "mv -f \"$tmp\" /opt/deploy.sh",
+            "case \"$SSM_operation\" in deploy) dest=/opt/deploy.sh;; rollback) dest=/opt/rollback.sh;; *) exit 1;; esac",
+            "mv -f \"$tmp\" \"$dest\"",
             "trap - EXIT",
-            "exec /opt/deploy.sh \"$SSM_frontendDigest\" \"$SSM_backendDigest\""
+            "if [ \"$SSM_operation\" = rollback ]; then exec /opt/rollback.sh \"$SSM_releaseId\"; fi",
+            "exec /opt/deploy.sh \"$SSM_frontendDigest\" \"$SSM_backendDigest\" \"$SSM_commitSha\""
           ]
-          timeoutSeconds   = "300"
+          timeoutSeconds   = "600"
           workingDirectory = "/opt"
         }
       }
