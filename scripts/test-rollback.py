@@ -25,6 +25,7 @@ if pathlib.Path(sys.argv[0]).name=='aws':
  else: print('token')
 elif a[0]=='login': sys.stdin.read()
 elif a[0]=='pull': sys.exit(1 if case=='pull' else 0)
+elif a[0]=='exec': assert a==['exec','moss_marrow_frontend','nginx','-t']
 elif a[0]=='image': print('image-id')
 elif a[0]=='inspect':
  fmt=a[2]
