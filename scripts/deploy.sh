@@ -111,18 +111,31 @@ capture() {
 previous_frontend=$(capture frontend) || { echo 'Cannot establish frontend rollback target' >&2; exit 1; }
 previous_backend=$(capture backend) || { echo 'Cannot establish backend rollback target' >&2; exit 1; }
 
-verify() {
+verify_once() {
   local fe=$1 be=$2
   local origin=http://127.0.0.1 curl_resolve=()
   if [[ -s "$TLS_DIR/https-server.conf" ]]; then
     origin="https://${PUBLIC_IP}"
     curl_resolve=(--connect-to "${PUBLIC_IP}:443:127.0.0.1:443")
   fi
+  docker exec moss_marrow_frontend nginx -t &&
   [[ "$(docker inspect -f '{{.Config.Image}}' moss_marrow_frontend)" == "$fe" ]] &&
   [[ "$(docker inspect -f '{{.Config.Image}}' moss_marrow_backend)" == "$be" ]] &&
   [[ "$(docker inspect -f '{{.State.Health.Status}}' moss_marrow_backend)" == healthy ]] &&
-  curl -fsS --max-time 5 "${curl_resolve[@]}" "${origin}/" | grep 'id="root"' >/dev/null &&
-  curl -fsS --max-time 5 "${curl_resolve[@]}" "${origin}/api/v1/health" | grep '"status":"ok"' >/dev/null
+  curl -fsS --connect-timeout 3 --max-time 5 "${curl_resolve[@]}" "${origin}/" | grep 'id="root"' >/dev/null &&
+  curl -fsS --connect-timeout 3 --max-time 5 "${curl_resolve[@]}" "${origin}/api/v1/health" | grep '"status":"ok"' >/dev/null
+}
+# Container health does not guarantee the TLS listener is ready on its first request.
+# Retrying is bounded; certificate validation and every application check still apply.
+verify() {
+  local attempt
+  for attempt in 1 2 3 4 5; do
+    if verify_once "$@"; then return 0; fi
+    echo "Application verification failed (attempt $attempt/5)." >&2
+    if (( attempt < 5 )); then sleep 2; fi
+  done
+  echo 'Application verification exhausted all attempts.' >&2
+  return 1
 }
 verify "$previous_frontend" "$previous_backend" || { echo 'Previous application failed health verification' >&2; exit 1; }
 # --- Authenticate Docker to ECR using EC2 instance profile ---

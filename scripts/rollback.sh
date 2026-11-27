@@ -97,18 +97,31 @@ PY
 launch() {
   docker compose --project-name "$project" -f "$work/compose.yml" -f "$work/override.json" up -d --no-deps --pull never --wait --wait-timeout 65 backend frontend
 }
-verify() {
+verify_once() {
   local origin=http://127.0.0.1 ip args=()
   if [[ -s "$DEPLOY_DIR/moss-tls/https-server.conf" ]]; then
     ip=$(</etc/moss-marrow/public-ip)
     [[ "$ip" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || return 1
     origin="https://$ip"; args=(--connect-to "$ip:443:127.0.0.1:443")
   fi
+  docker exec moss_marrow_frontend nginx -t &&
   [[ $(docker inspect -f '{{.Config.Image}}' moss_marrow_frontend) == "$1" ]] &&
   [[ $(docker inspect -f '{{.Config.Image}}' moss_marrow_backend) == "$2" ]] &&
   [[ $(docker inspect -f '{{.State.Health.Status}}' moss_marrow_backend) == healthy ]] &&
-  curl -fsS --max-time 10 "${args[@]}" "$origin/" | grep 'id="root"' >/dev/null &&
-  curl -fsS --max-time 10 "${args[@]}" "$origin/api/v1/health" | grep '"status":"ok"' >/dev/null
+  curl -fsS --connect-timeout 3 --max-time 10 "${args[@]}" "$origin/" | grep 'id="root"' >/dev/null &&
+  curl -fsS --connect-timeout 3 --max-time 10 "${args[@]}" "$origin/api/v1/health" | grep '"status":"ok"' >/dev/null
+}
+# Container health does not guarantee the TLS listener is ready on its first request.
+# Retrying is bounded; certificate validation and every application check still apply.
+verify() {
+  local attempt
+  for attempt in 1 2 3 4 5; do
+    if verify_once "$@"; then return 0; fi
+    echo "Application verification failed (attempt $attempt/5)." >&2
+    if (( attempt < 5 )); then sleep 2; fi
+  done
+  echo 'Application verification exhausted all attempts.' >&2
+  return 1
 }
 verify "$old_fe" "$old_be" || { echo 'Current application is unhealthy; refusing rollback' >&2; exit 1; }
 # Existence checks and pulls complete before any container replacement.

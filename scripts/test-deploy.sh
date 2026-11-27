@@ -13,9 +13,11 @@ export OLD="sha256:$(printf '1%.0s' {1..64})" NEW="sha256:$(printf '2%.0s' {1..6
 sed "s|readonly DEPLOY_DIR=\"/opt\"|readonly DEPLOY_DIR=\"$dir\"|" "$root/scripts/deploy.sh" > "$dir/deploy"
 printf '#!/bin/bash\ntrue\n' > "$dir/bin/flock"
 printf '#!/bin/bash\necho synthetic-test-value\n' > "$dir/bin/aws"
+printf '#!/bin/bash\ntrue\n' > "$dir/bin/sleep"
 cat > "$dir/bin/curl" <<'MOCK'
 #!/bin/bash
 echo "$*" >> "$QA/curl"
+if [[ $CASE == tls_transient && $(cat "$QA/current") == "$NEW" && ! -e "$QA/transient" ]]; then touch "$QA/transient"; echo "curl: (35) Send failure: Broken pipe" >&2; exit 35; fi
 if [[ "$*" == *health* ]]; then
   if [[ ( $CASE == health || $CASE == tls_health ) && $(cat "$QA/current") == "$NEW" ]]; then exit 1; fi
   echo '{"status":"ok"}'
@@ -34,6 +36,7 @@ case "$1" in
       '{{.State.Health.Status}}') echo healthy;;
       *) exit 8;;
     esac;;
+  exec) [[ "$*" == *'nginx -t'* ]] && [[ $CASE != tls_config || $(cat "$QA/current") != "$NEW" ]];;
   image) echo config-id;;
   compose)
     [[ "$*" == *'up -d --no-deps --pull never --wait --wait-timeout 65 backend frontend' ]] || exit 8
@@ -48,10 +51,10 @@ case "$1" in
 esac
 MOCK
 chmod +x "$dir/bin/"*
-for CASE in success tls tls_health pull replacement health missing rollback_failure metadata; do
+for CASE in success tls tls_health tls_transient tls_config pull replacement health missing rollback_failure metadata; do
   export CASE
   rm -rf "$dir/moss-tls"
-  if [[ $CASE == tls || $CASE == tls_health ]]; then
+  if [[ $CASE == tls || $CASE == tls_health || $CASE == tls_transient ]]; then
     mkdir -p "$dir/moss-tls"
     printf 'server {}\n' > "$dir/moss-tls/https-server.conf"
   fi
@@ -64,10 +67,11 @@ for CASE in success tls tls_health pull replacement health missing rollback_fail
   rc=0; bash "$dir/deploy" "$NEW" "$NEW" > "$dir/log" 2>&1 || rc=$?
   case "$CASE" in
     success) [[ $rc == 0 && $(cat "$dir/current") == "$NEW" ]];;
+    tls_transient) [[ $rc == 0 && $(cat "$dir/current") == "$NEW" ]]; grep -q "attempt 1/5" "$dir/log";;
     tls) [[ $rc == 0 && $(cat "$dir/current") == "$NEW" ]]; grep -q 'https://198.51.100.12' "$dir/curl"; grep -q -- '--connect-to 198.51.100.12:443:127.0.0.1:443' "$dir/curl";;
     tls_health) [[ $rc != 0 && $(cat "$dir/current") == "$OLD" ]]; grep -q 'Rollback verified' "$dir/log"; grep -q 'https://198.51.100.12' "$dir/curl";;
     pull|missing) [[ $rc != 0 && ! -s "$dir/replacements" ]];;
-    replacement|health) [[ $rc != 0 && $(cat "$dir/current") == "$OLD" ]]; grep -q 'Rollback verified' "$dir/log";;
+    replacement|health|tls_config) [[ $rc != 0 && $(cat "$dir/current") == "$OLD" ]]; grep -q 'Rollback verified' "$dir/log";;
     metadata) [[ $rc != 0 && $(cat "$dir/current") == "$OLD" ]]; grep -q "PREV_FRONTEND_DIGEST=$OLD" "$dir/current_digests.env"; [[ "$(cat "$dir/moss-releases.json")" == broken ]];;
     rollback_failure) [[ $rc != 0 ]]; grep -q 'rollback verification failed' "$dir/log";;
   esac
